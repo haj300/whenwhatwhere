@@ -21,6 +21,6 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true
   },
-  "include": ["/**/*"],
+  "include": ["**/*"],
   "exclude": ["node_modules"]
 }
