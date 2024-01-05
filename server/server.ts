@@ -7,9 +7,10 @@ const router = new Router();
 
 app.use(serve("public"));
 
-router.get("/home", async (ctx: { body: { title: string } }) => {
-  const responseData = { title: "whenwhatwhere" };
-  ctx.body = responseData;
+router.post("/event", async (ctx: { request: { body: any }; body: any }) => {
+  const eventData = ctx.request.body;
+  // send to db
+  ctx.body = eventData;
 });
 
 app.use(router.routes());
