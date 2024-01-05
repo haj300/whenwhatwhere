@@ -2,9 +2,6 @@
   "name": "whenwhatwhere",
   "module": "index.html",
   "type": "module",
-  "scripts": {
-    "migrate": "node-pg-migrate"
-  },
   "devDependencies": {
     "@types/bun": "latest"
   },
