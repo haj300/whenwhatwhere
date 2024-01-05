@@ -4,11 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://fredrikhasselgren@localhost:5432/www"
-}
-
-model test {
-  id Int @id @default(autoincrement())
+  url      = env(DATABASE_URL)
 }
 
 model event {
@@ -17,10 +13,4 @@ model event {
   description String @db.VarChar(255)
   eventStart DateTime @db.Timestamp(6)
   eventStop DateTime @db.Timestamp(6)
-}
-
-model pgmigrations {
-  id     Int      @id @default(autoincrement())
-  name   String   @db.VarChar(255)
-  run_on DateTime @db.Timestamp(6)
 }
