@@ -1,15 +1,27 @@
+import dotenv from "dotenv";
+import {PrismaClient} from ".prisma/client";
+
 const Koa = require("koa");
 const Router = require("@koa/router");
+const { bodyParser } = require("@koa/bodyparser");
 const serve = require("koa-static");
-
 const app = new Koa();
 const router = new Router();
+const prisma = new PrismaClient();
+
+dotenv.config();
 
 app.use(serve("public"));
+app.use(bodyParser());
+
+//connect to db
+prisma.$connect();
 
 router.post("/event", async (ctx: { request: { body: any }; body: any }) => {
   const eventData = ctx.request.body;
-  // send to db
+  await prisma.event.create({data: ctx.body});
+
+
   ctx.body = eventData;
 });
 
