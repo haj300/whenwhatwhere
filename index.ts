@@ -1,12 +1,16 @@
 import { connect, listTables } from './db.ts';
 import dotenv from 'dotenv';
+import {PrismaClient} from ".prisma/client";
 
 dotenv.config();
 
 //db test code
-const db = connect();
-var result = await listTables(db);
-console.log(result);
+const prisma = new PrismaClient();
+prisma.$connect();
+
+prisma.event.findMany().then((events) => {
+  console.log(events);
+});
 
 const server = Bun.serve({
   port: 3000,
