@@ -7,3 +7,18 @@ body {
 #appTitle {
   color: #777;
 }
+
+#app {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+form {
+  margin-bottom: 20px;
+}
+
+button {
+  cursor: pointer;
+}
