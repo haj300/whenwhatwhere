@@ -1,6 +1,6 @@
 # whenwhatwhere
 
-A calendar to add and find music events in Stockholm, Sweden.  
+A calendar to add and find music events in Stockholm, Sweden.
 Users will be able to login and create their personal page, as well as adding and attending events.
 The purpose is to substitue fb events.
 
