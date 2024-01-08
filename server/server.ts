@@ -25,6 +25,12 @@ router.post("/event", async (ctx: { request: { body: any }; body: any }) => {
   ctx.body = eventData;
 });
 
+router.get("/events", async (ctx: { body: any }) => {
+  const events = await prisma.event.findMany();
+  ctx.body = events;
+  console.log(events);
+});
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 
