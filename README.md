@@ -27,8 +27,12 @@ Javascript, HTML, CSS
 
 ### Backend
 
-Bun, Typescript
+Bun, Koa, Typescript
 
 ### DB
 
 Postgress
+
+## To run:
+
+    bun --hot run server/server.ts
