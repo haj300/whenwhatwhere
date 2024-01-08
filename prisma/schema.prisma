@@ -4,13 +4,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env(DATABASE_URL)
+  url      = env("DATABASE_URL")
 }
 
 model event {
-  id Int @id @default(autoincrement())
-  name String @db.VarChar(255)
-  description String @db.VarChar(255)
-  eventStart DateTime @db.Timestamp(6)
-  eventStop DateTime @db.Timestamp(6)
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  description String   @db.VarChar(255)
+  eventStart  DateTime @db.Timestamp(6)
+  eventStop   DateTime @db.Timestamp(6)
 }
