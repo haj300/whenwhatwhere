@@ -11,14 +11,36 @@ class Calendar {
     );
   }
 
-  createEvent(event) {
+  async createEvent(event) {
     event.preventDefault();
 
-    const eventTitle = this.eventForm.elements["eventTitle"].value;
-    const eventDate = this.eventForm.elements["eventDate"].value;
+    const eventName = this.eventForm.elements["eventName"].value;
+    const eventDescription = this.eventForm.elements["eventDescription"].value;
+    const eventStart = this.eventForm.elements["eventStart"].value;
+    const eventStop = this.eventForm.elements["eventStop"].value;
+
+    const eventData = {
+      name: eventName,
+      description: eventDescription,
+      eventStart: new Date(eventStart).toISOString(),
+      eventStop: new Date(eventStop).toISOString(),
+    };
+
+    try {
+      const response = await fetch("http://localhost:3000/event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(eventData),
+      });
+      console.log(await response.json());
+    } catch (e) {
+      console.error(e);
+    }
 
     const eventItem = document.createElement("div");
-    eventItem.textContent = `${eventTitle} - ${eventDate}`;
+    eventItem.textContent = `${eventName} - ${eventStart}`;
     this.eventList.appendChild(eventItem);
 
     this.eventForm.reset();
