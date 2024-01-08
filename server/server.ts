@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
-import {PrismaClient} from ".prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const Koa = require("koa");
 const Router = require("@koa/router");
+const { bodyParser } = require("@koa/bodyparser");
 const serve = require("koa-static");
 const app = new Koa();
 const router = new Router();
@@ -11,18 +12,17 @@ const prisma = new PrismaClient();
 dotenv.config();
 
 app.use(serve("public"));
+app.use(bodyParser());
 
-
-
-//Db test code
+//connect to db
 prisma.$connect();
-prisma.event.findMany().then((events) => {
-  console.log(events);
-});
 
-router.get("/home", async (ctx: { body: { title: string } }) => {
-  const responseData = { title: "whenwhatwhere" };
-  ctx.body = responseData;
+router.post("/event", async (ctx: { request: { body: any }; body: any }) => {
+  const eventData = ctx.request.body;
+  console.log(eventData);
+  await prisma.event.create({ data: eventData });
+
+  ctx.body = eventData;
 });
 
 app.use(router.routes());

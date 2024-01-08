@@ -7,7 +7,27 @@
     <title>whenwhatwhere</title>
   </head>
   <body>
-    <h1 id="appTitle"></h1>
+    <h1 id="appTitle">whenwhatwhere</h1>
+    <div id="app">
+      <h1>create event</h1>
+      <form id="eventForm">
+        <label for="eventName">title:</label>
+        <input type="text" id="eventName" name="eventName" required />
+        <label for="eventDescription">description:</label>
+        <input
+          type="text"
+          id="eventDescription"
+          name="eventDescription"
+          required
+        />
+        <label for="eventDate">date start:</label>
+        <input type="date" id="eventStart" name="eventStart" required />
+        <label for="eventDate">date end:</label>
+        <input type="date" id="eventStop" name="eventStop" required />
+        <button type="submit">create</button>
+      </form>
+      <div id="eventList"></div>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>
