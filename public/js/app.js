@@ -1,8 +1,4 @@
-import { Calendar, createCalendar } from "./calendar.js";
-
 document.addEventListener("DOMContentLoaded", () => {
-  new Calendar(eventForm);
-  createCalendar();
   getEvents();
 });
 
