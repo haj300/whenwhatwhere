@@ -1,7 +1,7 @@
 import { Calendar, createCalendar } from "./calendar.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  new Calendar();
+  new Calendar(eventForm);
   createCalendar();
   getEvents();
 });
@@ -12,7 +12,6 @@ async function getEvents() {
 
     const response = await fetch("http://localhost:3000/events");
     const events = await response.json();
-    console.log(events);
 
     events.forEach((event) => {
       const eventItem = document.createElement("div");

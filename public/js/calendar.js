@@ -1,40 +1,27 @@
 import { getEvents } from "./app.js";
 export class Calendar {
-  constructor() {
-    this.eventForm = document.getElementById("eventForm");
-    this.eventList = document.getElementById("eventList");
-    this.addEventListeners();
-  }
-
-  addEventListeners() {
-    this.eventForm.addEventListener("submit", (event) =>
-      this.createEvent(event),
+  constructor(eventForm) {
+    this.eventForm = eventForm;
+    this.eventForm.addEventListener(
+      "submit",
+      this.handleEventFormSubmit.bind(this),
     );
   }
 
-  async createEvent(event) {
+  async handleEventFormSubmit(event) {
     event.preventDefault();
 
-    const eventName = this.eventForm.elements["eventName"].value;
-    const eventDescription = this.eventForm.elements["eventDescription"].value;
-    const eventStart = this.eventForm.elements["eventStart"].value;
-    const eventStop = this.eventForm.elements["eventStop"].value;
-
+    const { eventName, eventDescription, eventStart, eventStop } =
+      this.eventForm.elements;
     const eventData = {
-      name: eventName,
-      description: eventDescription,
-      eventStart: new Date(eventStart).toISOString(),
-      eventStop: new Date(eventStop).toISOString(),
+      name: eventName.value,
+      description: eventDescription.value,
+      eventStart: new Date(eventStart.value).toISOString(),
+      eventStop: new Date(eventStop.value).toISOString(),
     };
 
     try {
-      await fetch("http://localhost:3000/event", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(eventData),
-      });
+      await this.postEvent(eventData);
     } catch (e) {
       console.error(e);
     }
@@ -43,15 +30,28 @@ export class Calendar {
     getEvents();
     createCalendar();
   }
+
+  async postEvent(eventData) {
+    return fetch("http://localhost:3000/event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(eventData),
+    });
+  }
 }
 
 export function createCalendar() {
-  let daysTag = document.querySelector(".days");
+  const DAYS_IN_WEEK = 7;
+  const MONTHS_IN_YEAR = 12;
+
+  const daysTag = document.querySelector(".days");
   const currentDate = document.querySelector(".current-date");
 
-  let date = new Date(),
-    currentYear = date.getFullYear(),
-    currentMonth = date.getMonth();
+  const date = new Date();
+  const currentYear = date.getFullYear();
+  const currentMonth = date.getMonth();
 
   const months = [
     "January",
@@ -68,48 +68,27 @@ export function createCalendar() {
     "December",
   ];
 
-  const renderCalendar = (month, year, currentDate, daysTag) => {
-    let firstDayofMonth = new Date(year, month, 1).getDay(),
-      lastDateofLastMonth = new Date(year, month, 0).getDate(),
-      lastDateofMonth = new Date(year, month + 1, 0).getDate(),
-      lastDayofMonth = new Date(year, month, lastDateofMonth).getDay();
-    let liTag = " ";
+  let lastDateofMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  let lastDayofMonth = new Date(
+    currentYear,
+    currentMonth,
+    lastDateofMonth,
+  ).getDay();
 
-    // li for previous month dates
-    for (let i = firstDayofMonth; i > 0; i--) {
-      liTag += `<li class="inactive">${lastDateofLastMonth - i + 1}</li>`;
-    }
+  console.log("Last date of month: ", lastDateofMonth);
 
-    // li for current month dates
-    for (let i = 1; i <= lastDateofMonth; i++) {
-      if (
-        i === new Date().getDate() &&
-        currentMonth === new Date().getMonth()
-      ) {
-        liTag += `<li class="today">${i}</li>`;
-      } else {
-        liTag += `<li>${i}</li>`;
-      }
-    }
+  // Function to generate HTML for a day
+  function generateDayHTML(day, isToday, isNextMonth) {
+    let className = "";
+    if (isToday) className = "today";
+    if (isNextMonth) className = "next-date";
+    console.log("className: ", className, "day: ", day);
+    return `<li class="${className}">${day}</li>`;
+  }
 
-    // li for next month dates
-    for (let i = 1; i < 7 - lastDayofMonth; i++) {
-      liTag += `<li class="next-date">${i}</li>`;
-      daysTag.innerHTML = liTag;
-    }
-    currentDate.innerText = `${months[month]} ${year}`;
-    daysTag.innerHTML = liTag;
-    console.log(currentDate.innerHTML, daysTag.innerHTML, month, year);
-  };
-
-  for (let i = 0; i < 3; i++) {
-    // Create local variables for the month and year
-    let month = currentMonth + i;
-    let year = currentYear;
-    if (month > 11) {
-      month = 0;
-      year++;
-    }
+  // Function to render a calendar month
+  function renderCalendarMonth(month, year, currentDate, daysTag) {
+    let calendarDaysHTML = "";
 
     // Create a new calendar container for the month
     const calendarContainer = document.createElement("div");
@@ -117,15 +96,46 @@ export function createCalendar() {
     document.getElementById("app").appendChild(calendarContainer);
 
     // Create a new currentDate element for the month
-    const currentDate = document.createElement("div");
+    currentDate = document.createElement("div");
     currentDate.classList.add("current-date");
     calendarContainer.appendChild(currentDate);
 
+    console.log(currentDate.innerHTML, daysTag.innerHTML, month, year);
+
     // Create a new days container for the month
-    const daysTag = document.createElement("ul");
+    daysTag = document.createElement("ul");
     daysTag.classList.add("days");
     calendarContainer.appendChild(daysTag);
 
-    renderCalendar(month, year, currentDate, daysTag);
+    // Generate HTML for current month dates
+    for (let day = 1; day <= lastDateofMonth; day++) {
+      const isToday =
+        day === new Date().getDate() && month === new Date().getMonth();
+      calendarDaysHTML += generateDayHTML(day, isToday, false);
+    }
+
+    // Generate HTML for next month dates
+    for (let day = 1; day < DAYS_IN_WEEK - lastDayofMonth; day++) {
+      calendarDaysHTML += generateDayHTML(day, false, true);
+    }
+
+    currentDate.innerText = `${months[month]} ${year}`;
+    daysTag.innerHTML = calendarDaysHTML;
+    console.log(currentDate.innerHTML, daysTag.innerHTML, month, year);
   }
+
+  // Function to render multiple calendar months
+  function renderCalendarMonths(startMonth, startYear, numMonths) {
+    for (let i = 0; i < numMonths; i++) {
+      let month = startMonth + i;
+      let year = startYear;
+      if (month >= MONTHS_IN_YEAR) {
+        month -= MONTHS_IN_YEAR;
+        year++;
+      }
+      renderCalendarMonth(month, year, currentDate, daysTag);
+    }
+  }
+
+  renderCalendarMonths(currentMonth, currentYear, 3);
 }

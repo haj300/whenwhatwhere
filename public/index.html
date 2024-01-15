@@ -1,46 +1,33 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="style.css" />
-        <title>whenwhatwhere</title>
-    </head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>whenwhatwhere</title>
+  </head>
 
-    <body>
-        <h1 id="appTitle">whenwhatwhere</h1>
-        <div id="app">
-            <h1 id="create-event">create event</h1>
-            <form id="eventForm">
-                <label for="eventName">title:</label>
-                <input type="text" id="eventName" name="eventName" required />
-                <label for="eventDescription">description:</label>
-                <input
-                    type="text"
-                    id="eventDescription"
-                    name="eventDescription"
-                    required
-                />
-                <label for="eventDate">date start:</label>
-                <input type="date" id="eventStart" name="eventStart" required />
-                <label for="eventDate">date end:</label>
-                <input type="date" id="eventStop" name="eventStop" required />
-                <button type="submit">create</button>
-            </form>
-            <p class="current-date"></p>
-            <div class="calendar">
-                <ul class="weeks">
-                    <li>Mon</li>
-                    <li>Tue</li>
-                    <li>Wed</li>
-                    <li>Thur</li>
-                    <li>Fri</li>
-                    <li>Sat</li>
-                    <li>Sun</li>
-                </ul>
-                <ul class="days"></ul>
-            </div>
-        </div>
-        <script type="module" src="js/app.js"></script>
-    </body>
+  <body>
+    <h1 id="appTitle">whenwhatwhere</h1>
+    <div id="app">
+      <button onclick="window.location.href='addEvent.html'">
+        Create event
+      </button>
+      <p class="current-date"></p>
+      <div class="calendar">
+        <ul class="weeks">
+          <li>Mon</li>
+          <li>Tue</li>
+          <li>Wed</li>
+          <li>Thur</li>
+          <li>Fri</li>
+          <li>Sat</li>
+          <li>Sun</li>
+        </ul>
+        <ul class="days"></ul>
+      </div>
+    </div>
+    <p id="eventList"></p>
+    <script type="module" src="js/app.js"></script>
+  </body>
 </html>
