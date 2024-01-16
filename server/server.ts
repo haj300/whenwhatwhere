@@ -18,21 +18,38 @@ app.use(bodyParser());
 //connect to db
 prisma.$connect();
 
-router.post(
-  "/post-event",
-  async (ctx: { request: { body: any }; body: any }) => {
-    const eventData = ctx.request.body;
-    console.log(eventData);
+router.post("/addEvent", async (ctx: { request: { body: any }; body: any }) => {
+  const eventData = ctx.request.body;
+  console.log("from addEvent", eventData);
+  try {
     await prisma.event.create({ data: eventData });
-
-    ctx.body = eventData;
-  },
-);
+  } catch (error) {
+    console.error(error);
+  }
+  ctx.body = eventData;
+});
 
 router.get("/events", async (ctx: { body: any }) => {
   const events = await prisma.event.findMany();
   ctx.body = events;
+  console.log("Events" + events);
 });
+
+// Pagination
+// router.get("/events", async (ctx: { query: any; body: any }) => {
+//   const page = Number(ctx.query.page) || 1;
+//   const pageSize = Number(ctx.query.pageSize) || 10;
+
+//   const events = await prisma.event.findMany({
+//     take: pageSize,
+//     skip: (page - 1) * pageSize,
+//     orderBy: {
+//       id: 'asc', // or 'desc' for descending order
+//     },
+//   });
+
+//   ctx.body = events;
+// });
 
 router.get(
   "/event/:id",
