@@ -9,10 +9,10 @@ class Event {
   }
 }
 
+getEvent(eventId);
+
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("id");
-
-getEvent(eventId);
 
 function getEvent(eventId) {
   fetch(`/event/${eventId}`)
