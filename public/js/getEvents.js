@@ -1,8 +1,4 @@
-import { Calendar, createCalendar } from "./calendar.js";
-
 document.addEventListener("DOMContentLoaded", () => {
-  new Calendar(eventForm);
-  createCalendar();
   getEvents();
 });
 
@@ -14,11 +10,15 @@ async function getEvents() {
     const events = await response.json();
 
     events.forEach((event) => {
+      const eventTitle = document.createElement("h2");
       const eventItem = document.createElement("div");
-      eventItem.textContent = `${event.name}: ${event.eventStart.slice(
+      eventItem.classList.add("event-item");
+      eventTitle.textContent = event.name;
+      eventItem.textContent = `${event.description}: ${event.eventDate.slice(
         0,
         10,
-      )} - ${event.eventStop.slice(0, 10)}`;
+      )} - ${event.eventTime.slice(0, 5)}`;
+      document.getElementById("eventList").appendChild(eventTitle);
       document.getElementById("eventList").appendChild(eventItem);
     });
   } catch (e) {

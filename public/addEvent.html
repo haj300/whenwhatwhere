@@ -9,20 +9,22 @@
   <body>
     <h1 id="create-event">create event</h1>
     <form id="eventForm">
-      <label for="eventName">title:</label>
-      <input type="text" id="eventName" name="eventName" required />
-      <label for="eventDescription">description:</label>
-      <input
-        type="text"
-        id="eventDescription"
-        name="eventDescription"
-        required
-      />
-      <label for="eventDate">start:</label>
-      <input type="date" id="eventStart" name="eventStart" required />
-      <label for="eventDate">end:</label>
-      <input type="date" id="eventStop" name="eventStop" required />
+      <label for="name">title:</label>
+      <input type="text" id="name" name="name" required />
+      <label for="description">description:</label>
+      <input type="text" id="description" name="description" required />
+      <label for="time">time:</label>
+      <input type="time" id="time" name="time" required />
+      <label for="date">date:</label>
+      <input type="date" id="date" name="date" required />
+      <label for="location">location:</label>
+      <input type="text" id="location" name="location" required />
+      <label for="image">image:</label>
+      <input type="text" id="image" name="image" />
       <button type="submit">create</button>
     </form>
+    <p id="eventList"></p>
+    <script type="module" src="js/postEvent.js"></script>
+    <script type="module" src="js/getEvents.js"></script>
   </body>
 </html>

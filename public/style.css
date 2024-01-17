@@ -29,6 +29,17 @@ body {
   padding-bottom: 3rem; /* Adjust as needed */
 }
 
+#eventList {
+  padding: 1rem;
+  background-color: #aaa;
+}
+
+.event-item {
+  background-color: #6038ee;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
 form {
   margin-bottom: 20px;
 }
