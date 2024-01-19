@@ -24,14 +24,34 @@ class PostEvent {
     dateValue.setHours(timeValue[0]);
     dateValue.setMinutes(timeValue[1]);
 
+    // Upload the image to gc bucket first
+    const formData = new FormData(this.eventForm);
+    formData.append("file", image.files[0]);
+
+    let imageUrl;
+    try {
+      const response = await fetch("/uploadImage", {
+        method: "POST",
+        body: formData,
+      });
+      if (response.headers.get("Content-Type") === "application/json") {
+        const data = await response.json();
+        imageUrl = data.url;
+      } else {
+        imageUrl = await response.text();
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     const eventData = {
       name: name.value,
       description: description.value,
       date: dateValue.toISOString(),
       location: location.value,
-      image: image.value,
+      image: imageUrl,
     };
-    console.log("from postEvent.js", eventData);
+
     try {
       await this.postEvent(eventData);
     } catch (e) {
