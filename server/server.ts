@@ -65,34 +65,29 @@ router.get("/events", async (ctx: { body: any }) => {
   ctx.body = events;
 });
 
-// Pagination
-// router.get("/events", async (ctx: { query: any; body: any }) => {
-//   const page = Number(ctx.query.page) || 1;
-//   const pageSize = Number(ctx.query.pageSize) || 10;
-
-//   const events = await prisma.event.findMany({
-//     take: pageSize,
-//     skip: (page - 1) * pageSize,
-//     orderBy: {
-//       id: 'asc', // or 'desc' for descending order
-//     },
-//   });
-
-//   ctx.body = events;
-// });
-
 router.get(
   "/event/:id",
-  async (ctx: { params: { id: any }; body: any; redirect: any }) => {
-    console.log(ctx.params.id);
+  async (ctx: {
+    params: { id: any };
+    body: any;
+    redirect: any;
+    status: any;
+  }) => {
     const { id } = ctx.params;
-    const event = await prisma.event.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
-    ctx.redirect(`/event.html?id=${ctx.params.id}`);
-    ctx.body = event;
+
+    try {
+      const event = await prisma.event.findUnique({
+        where: {
+          id: Number(id),
+        },
+      });
+      ctx.body = event;
+      console.log(ctx.body);
+      ctx.redirect(`/event.html?id=${ctx.params.id}`);
+    } catch (error) {
+      ctx.status = 404;
+      console.error(error);
+    }
   },
 );
 
