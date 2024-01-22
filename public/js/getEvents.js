@@ -14,10 +14,10 @@ async function getEvents() {
       const eventItem = document.createElement("div");
       eventItem.classList.add("event-item");
       eventTitle.textContent = event.name;
-      eventItem.textContent = `${event.description}: ${event.eventDate.slice(
+      eventItem.textContent = `${event.description}: ${event.date.slice(
         0,
         10,
-      )} - ${event.eventTime.slice(0, 5)}`;
+      )} at ${event.date.slice(11, 16)} ${event.location}`;
       document.getElementById("eventList").appendChild(eventTitle);
       document.getElementById("eventList").appendChild(eventItem);
     });
