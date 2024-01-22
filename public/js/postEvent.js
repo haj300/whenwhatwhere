@@ -1,11 +1,9 @@
 document.addEventListener("DOMContentLoaded", (event) => {
   new PostEvent(document.getElementById("eventForm"));
-  console.log("from postEvent.js");
 });
 
 class PostEvent {
   constructor(eventForm) {
-    console.log("from PostEvent class");
     this.eventForm = eventForm;
     this.eventForm.addEventListener(
       "submit",
