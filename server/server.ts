@@ -1,23 +1,18 @@
-import dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
+import Koa from "koa";
+import { koaBody } from "koa-body";
+import serve from "koa-static";
+import Router from "@koa/router";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Storage } from "@google-cloud/storage";
-
-const Koa = require("koa");
-const Router = require("@koa/router");
-const serve = require("koa-static");
-const app = new Koa();
-const router = new Router();
-const prisma = new PrismaClient();
-const path = require("path");
-const { koaBody } = require("koa-body");
-const fs = require("fs");
+import dotenv from "dotenv";
 
 dotenv.config();
 
-app.use(serve(path.join("public")));
-
-prisma.$connect();
-
+const app = new Koa();
+const router = new Router();
+const prisma = new PrismaClient();
 const storageClient = new Storage({
   projectId: process.env.GCLOUD_PROJECT_ID,
   keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
@@ -25,7 +20,13 @@ const storageClient = new Storage({
 const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
 const bucket = storageClient.bucket(bucketName);
 
-router.post("/uploadImage", koaBody({ multipart: true }), async (ctx: any) => {
+app.use(serve(path.join("public")));
+
+// Connect to Prisma
+prisma.$connect();
+
+// Route handlers
+const uploadImage = async (ctx: any) => {
   const file = ctx.request.files.file[0];
   const gcsFile = bucket.file(file.newFilename);
 
@@ -39,10 +40,9 @@ router.post("/uploadImage", koaBody({ multipart: true }), async (ctx: any) => {
   ctx.body = `https://storage.googleapis.com/${
     bucket.name
   }/${encodeURIComponent(file.newFilename)}`;
-});
+};
 
-router.post("/addEvent", koaBody({ multipart: true }), async (ctx: any) => {
-  console.log(JSON.stringify(ctx.request.body, null, 2));
+const addEvent = async (ctx: any) => {
   const eventData = {
     name: ctx.request.body.name,
     description: ctx.request.body.description,
@@ -53,43 +53,55 @@ router.post("/addEvent", koaBody({ multipart: true }), async (ctx: any) => {
   };
 
   try {
-    await prisma.event.create({ data: eventData });
+    const event = await prisma.event.create({ data: eventData });
+    ctx.status = 201;
+    ctx.body = event;
   } catch (error) {
-    console.error(error);
-  }
-  ctx.body = eventData;
-});
-
-router.get("/events", async (ctx: { body: any }) => {
-  const events = await prisma.event.findMany();
-  ctx.body = events;
-});
-
-router.get(
-  "/event/:id",
-  async (ctx: {
-    params: { id: any };
-    body: any;
-    redirect: any;
-    status: any;
-  }) => {
-    const { id } = ctx.params;
-
-    try {
-      const event = await prisma.event.findUnique({
-        where: {
-          id: Number(id),
-        },
-      });
-      ctx.body = event;
-      console.log(ctx.body);
-      ctx.redirect(`/event.html?id=${ctx.params.id}`);
-    } catch (error) {
-      ctx.status = 404;
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // This is a validation error
+      ctx.status = 400;
+      ctx.body = { error: error.message };
+    } else {
+      // This is an unexpected error
+      ctx.status = 500;
+      ctx.body = { error: (error as any).message };
       console.error(error);
     }
-  },
-);
+  }
+};
+
+const getEvents = async (ctx: { body: any }) => {
+  const events = await prisma.event.findMany();
+  ctx.body = events;
+};
+
+const getEventById = async (ctx: {
+  params: { id: any };
+  body: any;
+  redirect: any;
+  status: any;
+}) => {
+  const { id } = ctx.params;
+
+  try {
+    const event = await prisma.event.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+    ctx.body = event;
+    console.log(ctx.body);
+    ctx.redirect(`/event.html?id=${ctx.params.id}`);
+  } catch (error) {
+    ctx.status = 404;
+    console.error(error);
+  }
+};
+
+router.post("/uploadImage", koaBody({ multipart: true }), uploadImage);
+router.post("/addEvent", koaBody({ multipart: true }), addEvent);
+router.get("/event/:id", getEventById);
+router.get("/events", getEvents);
 
 app.use(router.routes());
 app.use(router.allowedMethods());
