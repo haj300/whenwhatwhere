@@ -12,6 +12,8 @@ form {
 button {
   cursor: pointer;
   display: flex;
+  margin-top: 0.5rem;
+  background-color: #666;
 }
 
 #appTitle {
