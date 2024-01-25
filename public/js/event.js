@@ -8,8 +8,9 @@ class Event {
     this.location = location;
   }
 }
-
-getEvent(eventId);
+window.onload = function () {
+  getEvent(eventId);
+};
 
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("id");
@@ -34,13 +35,12 @@ function getEvent(eventId) {
         eventData.location,
       );
 
-      document.getElementById("eventName").textContent = event.name;
-      document.getElementById("eventDescription").textContent =
-        event.description;
-      document.getElementById("eventImage").src = event.image;
-      document.getElementById("eventDate").textContent = event.date;
-      document.getElementById("eventTime").textContent = event.time;
-      document.getElementById("eventLocation").textContent = event.location;
+      document.getElementById("name").textContent = event.name;
+      document.getElementById("description").textContent = event.description;
+      document.getElementById("date").textContent = event.date;
+      document.getElementById("time").textContent = event.time;
+      document.getElementById("location").textContent = event.location;
+      document.getElementById("image").src = event.image;
     })
     .catch((error) => {
       console.error(

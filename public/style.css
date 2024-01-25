@@ -1,104 +1,104 @@
 body {
-  font-family: Arial, sans-serif;
-  text-align: center;
-  background-color: #999;
-  color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #999;
+    color: white;
 }
 
 #appTitle {
-  color: #666;
-  font-size: 2em;
-  font-family: "Helvetica Neue", sans-serif;
+    color: #666;
+    font-size: 2em;
+    font-family: "Helvetica Neue", sans-serif;
 }
 
 #app {
-  padding: 20px;
-  max-width: 900px;
-  min-width: 600px;
-  margin: 0 auto;
+    padding: 20px;
+    max-width: 900px;
+    min-width: 600px;
+    margin: 0 auto;
 }
 
 #eventForm :is(label, input) {
-  display: block;
-  text-align: start;
+    display: block;
+    text-align: start;
 }
 
 #eventForm :is(#eventDescription) {
-  width: 95%;
-  text-align: left;
-  padding-bottom: 3rem; /* Adjust as needed */
+    width: 95%;
+    text-align: left;
+    padding-bottom: 3rem;
 }
 
 #eventList {
-  padding: 1rem;
-  background-color: #aaa;
+    padding: 1rem;
+    background-color: #aaa;
 }
 
 .event-item {
-  background-color: #6038ee;
-  padding: 1rem;
-  margin-bottom: 1rem;
+    background-color: #6038ee;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
 
 form {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 button {
-  cursor: pointer;
-  display: flex;
-  margin: 10px 10px;
+    cursor: pointer;
+    display: flex;
+    margin: 10px 10px;
 }
 
 .calendar-container li {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 1em;
-  border: 2px solid #754084;
-  color: #6c4388;
-  text-align: center;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 1em;
+    border: 2px solid #754084;
+    color: #6c4388;
+    text-align: center;
 }
 
 .calendar-container ul {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 1rem;
-  padding: 1em;
-  list-style: none;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+    padding: 1em;
+    list-style: none;
 }
 
 .calendar-container .days li {
-  z-index: 1;
-  cursor: pointer;
-  position: relative;
-  min-width: 3.8em;
-  min-height: 2em;
+    z-index: 1;
+    cursor: pointer;
+    position: relative;
+    min-width: 3.8em;
+    min-height: 2em;
 }
 
 .days li:inactive {
-  color: #aaa;
+    color: #aaa;
 }
 
 .today {
-  background-color: #b623e8;
-  color: #fff;
+    background-color: #b623e8;
+    color: #fff;
 }
 
 .weeks {
-  font-size: 1.5em;
-  background-image: url("assets/cars_bg.png");
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 1em;
-  border: 2px solid #754084;
-  color: #fff;
-  text-align: center;
-  padding: 3em 1.5em;
+    font-size: 1.5em;
+    background-image: url("assets/cars_bg.png");
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 1em;
+    border: 2px solid #754084;
+    color: #fff;
+    text-align: center;
+    padding: 3em 1.5em;
 }
 
 .event {
-  background-color: #ff0;
-  margin-top: 0.5em;
-  padding: 0.5em;
+    background-color: #ff0;
+    margin-top: 0.5em;
+    padding: 0.5em;
 }
