@@ -1,50 +1,54 @@
 body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #999;
-    color: white;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background-color: #999;
+  color: white;
 }
 
 form {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 button {
-    cursor: pointer;
-    display: flex;
-    margin: 10px 10px;
+  cursor: pointer;
+  display: flex;
+  margin: 10px 10px;
 }
 
 #appTitle {
-    color: #666;
-    font-size: 2em;
-    font-family: "Helvetica Neue", sans-serif;
+  color: #666;
+  font-size: 2em;
+  font-family: "Helvetica Neue", sans-serif;
 }
 
 #app {
-    padding: 20px;
-    max-width: 900px;
-    min-width: 600px;
-    margin: 0 auto;
+  padding: 20px;
+  max-width: 900px;
+  min-width: 600px;
+  margin: 0 auto;
 }
 
 #eventForm :is(label, input) {
-    display: block;
-    text-align: start;
+  display: block;
+  text-align: start;
 }
 
 #eventForm :is(#eventDescription) {
-    width: 95%;
-    text-align: left;
-    padding-bottom: 3rem;
+  width: 95%;
+  text-align: left;
+  padding-bottom: 3rem;
 }
 
 #eventList {
-    padding: 1rem;
-    background-color: #aaa;
+  padding: 1rem;
 }
 
 .event-item {
-    padding: 1rem;
-    margin-bottom: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.event-item-background img {
+  width: 80%;
+  height: auto;
 }
