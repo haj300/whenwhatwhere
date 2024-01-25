@@ -12,7 +12,6 @@ form {
 button {
   cursor: pointer;
   display: flex;
-  margin: 10px 10px;
 }
 
 #appTitle {
@@ -22,10 +21,9 @@ button {
 }
 
 #app {
-  padding: 20px;
-  max-width: 900px;
-  min-width: 600px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #eventForm :is(label, input) {
@@ -46,6 +44,11 @@ button {
 .event-item {
   padding: 1rem;
   margin-bottom: 1rem;
+}
+
+.event-item-background {
+  margin: 1rem;
+  padding: 1rem;
 }
 
 .event-item-background img {

@@ -18,7 +18,7 @@ async function getEvents() {
         event.location,
       );
       const eventImage = createEventImage(event.image);
-      const eventBackground = createEventBackground("orange");
+      const eventBackground = createEventBackground("#aaa");
 
       appendEventElements(
         eventList,
