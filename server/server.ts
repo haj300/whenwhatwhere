@@ -98,8 +98,8 @@ const getEventById = async (ctx: {
   }
 };
 
-router.post("/uploadImage", koaBody({ multipart: true }), uploadImage);
-router.post("/addEvent", koaBody({ multipart: true }), addEvent);
+router.post("/pages/uploadImage", koaBody({ multipart: true }), uploadImage);
+router.post("/pages/addEvent", koaBody({ multipart: true }), addEvent);
 router.get("/event/:id", getEventById);
 router.get("/events", getEvents);
 

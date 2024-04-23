@@ -28,7 +28,7 @@ class PostEvent {
 
     let imageUrl;
     try {
-      const response = await fetch("/uploadImage", {
+      const response = await fetch("/pages/uploadImage", {
         method: "POST",
         body: formData,
       });
@@ -61,7 +61,7 @@ class PostEvent {
 
   async postEvent(eventData) {
     try {
-      const response = await fetch("/addEvent", {
+      const response = await fetch("/pages/addEvent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

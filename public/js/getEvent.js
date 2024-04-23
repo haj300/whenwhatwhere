@@ -6,8 +6,10 @@ class Event {
     this.date = date;
     this.time = time;
     this.location = location;
+    (width = "200px"), (height = "100px");
   }
 }
+
 window.onload = function () {
   getEvent(eventId);
 };
@@ -41,6 +43,11 @@ function getEvent(eventId) {
       document.getElementById("time").textContent = event.time;
       document.getElementById("location").textContent = event.location;
       document.getElementById("image").src = event.image;
+
+      let eventElement = document.getElementById("event");
+
+      eventElement.style.width = event.width;
+      eventElement.style.height = event.height;
     })
     .catch((error) => {
       console.error(
