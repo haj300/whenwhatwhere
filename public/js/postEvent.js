@@ -28,7 +28,7 @@ class PostEvent {
 
     let imageUrl;
     try {
-      const response = await fetch("/pages/uploadImage", {
+      const response = await fetch("/uploadImage", {
         method: "POST",
         body: formData,
       });
@@ -61,7 +61,7 @@ class PostEvent {
 
   async postEvent(eventData) {
     try {
-      const response = await fetch("/pages/addEvent", {
+      const response = await fetch("/addEvent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,9 @@ class PostEvent {
         body: JSON.stringify(eventData),
       });
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(
+          `HTTP error! status: ${response.status} ${response.url}`,
+        );
       }
     } catch (error) {
       console.error("Error:", error);
