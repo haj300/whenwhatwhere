@@ -47,6 +47,22 @@ button {
   flex-direction: column;
 }
 
+#eventList :is(p) {
+  color: #eceaea;
+  margin: 1%;
+  align-self: flex-start;
+}
+
+#eventList :is(h4) {
+  color: #f0efef;
+  margin: 1%;
+  align-self: flex-start;
+}
+
+#eventList :is(img) {
+  margin-bottom: 3%;
+}
+
 .event-item {
   padding: 1rem;
   margin-bottom: 1rem;
