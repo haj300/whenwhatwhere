@@ -36,3 +36,7 @@ Postgress
 ## To run:
 
     bun --hot run server/server.ts
+
+## Migrate Prisma DB:
+
+    bun primsa migrate dev
