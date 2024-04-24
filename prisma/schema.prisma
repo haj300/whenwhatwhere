@@ -10,7 +10,7 @@ datasource db {
 model event {
   id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(255)
-  description String   @db.VarChar(255)
+  description String   @db.VarChar(1255)
   image       String   @db.VarChar(255)
   date        DateTime @db.Timestamp(6)
   location    String   @db.VarChar(255)
