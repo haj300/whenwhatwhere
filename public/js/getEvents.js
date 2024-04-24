@@ -14,12 +14,17 @@ async function getEvents() {
       });
       createAndAppend("h2", eventItem, { text: event.name });
       createAndAppend("img", eventItem, { src: event.image });
+      createAndAppend("h4", eventItem, { text: "Description: " });
       createAndAppend("p", eventItem, {
-        text: `Description: ${event.description}`,
+        text: `${event.description}`,
       });
-      createAndAppend("p", eventItem, { text: `Location: ${event.location}` });
+      createAndAppend("h4", eventItem, { text: "Location: " });
       createAndAppend("p", eventItem, {
-        text: `Date: ${event.date.slice(0, 10)} at ${event.date.slice(11, 16)}`,
+        text: `${event.location}`,
+      });
+      createAndAppend("h4", eventItem, { text: "Date: " });
+      createAndAppend("p", eventItem, {
+        text: `${event.date.slice(0, 10)} at ${event.date.slice(11, 16)}`,
       });
 
       eventItem.addEventListener("click", () => {
