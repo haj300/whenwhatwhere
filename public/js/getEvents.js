@@ -12,7 +12,10 @@ async function getEvents() {
       const eventItem = createAndAppend("div", eventList, {
         class: "event-item",
       });
-      createAndAppend("h2", eventItem, { text: event.name });
+      const eventTitle = createAndAppend("h2", eventItem, {
+        text: event.name,
+        class: "event-title",
+      });
       createAndAppend("img", eventItem, { src: event.image });
       createAndAppend("h4", eventItem, { text: "Description: " });
       createAndAppend("p", eventItem, {
@@ -27,7 +30,7 @@ async function getEvents() {
         text: `${event.date.slice(0, 10)} at ${event.date.slice(11, 16)}`,
       });
 
-      eventItem.addEventListener("click", () => {
+      eventTitle.addEventListener("click", () => {
         window.location.href = `/pages/event.html?id=${event.id}`;
       });
 
@@ -36,7 +39,6 @@ async function getEvents() {
         class: "button",
       });
       deleteButton.addEventListener("click", () => {
-        event.stopPropagation();
         deleteEvent(event.id);
         eventItem.remove();
       });
@@ -47,7 +49,7 @@ async function getEvents() {
 }
 
 function deleteEvent(eventId) {
-  fetch(`/pages/event/${eventId}`, {
+  fetch(`/event/${eventId}`, {
     method: "DELETE",
   })
     .then((response) => {

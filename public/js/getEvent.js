@@ -12,8 +12,6 @@ class Event {
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("id");
 
-console.log(eventId);
-
 window.onload = function () {
   getEvent(eventId);
 };
