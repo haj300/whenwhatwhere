@@ -28,12 +28,45 @@ async function getEvents() {
       });
 
       eventItem.addEventListener("click", () => {
-        window.location.href = `/pages/getEvent.html?id=${event.id}`;
+        window.location.href = `/pages/event.html?id=${event.id}`;
+      });
+
+      const deleteButton = createAndAppend("button", eventItem, {
+        text: "Delete Event",
+        class: "button",
+      });
+      deleteButton.addEventListener("click", () => {
+        event.stopPropagation();
+        deleteEvent(event.id);
+        eventItem.remove();
       });
     });
   } catch (e) {
     console.error(e);
   }
+}
+
+function deleteEvent(eventId) {
+  fetch(`/pages/event/${eventId}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.error(`Error status: ${response.status}`);
+        console.error(`Status text: ${response.statusText}`);
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
+    .then(() => {
+      getEvents();
+    })
+    .catch((error) => {
+      console.error(
+        "There has been a problem with the fetch operation:",
+        error,
+      );
+    });
 }
 
 function createAndAppend(

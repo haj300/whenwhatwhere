@@ -78,7 +78,6 @@ const getEvents = async (ctx: { body: any }) => {
 const getEventById = async (ctx: {
   params: { id: any };
   body: any;
-  redirect: any;
   status: any;
 }) => {
   const { id } = ctx.params;
@@ -89,11 +88,14 @@ const getEventById = async (ctx: {
         id: Number(id),
       },
     });
+    if (!event) {
+      ctx.status = 404;
+      return;
+    }
     ctx.body = event;
     console.log(ctx.body);
-    ctx.redirect(`/event.html?id=${ctx.params.id}`);
   } catch (error) {
-    ctx.status = 404;
+    ctx.status = 500;
     console.error(error);
   }
 };
@@ -102,6 +104,15 @@ router.post("/uploadImage", koaBody({ multipart: true }), uploadImage);
 router.post("/addEvent", koaBody({ multipart: true }), addEvent);
 router.get("/event/:id", getEventById);
 router.get("/events", getEvents);
+router.delete("/event/:id", async (ctx) => {
+  const { id } = ctx.params;
+  await prisma.event.delete({
+    where: {
+      id: Number(id),
+    },
+  });
+  ctx.status = 204;
+});
 
 app.use(router.routes());
 app.use(router.allowedMethods());
