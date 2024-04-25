@@ -6,16 +6,17 @@ class Event {
     this.date = date;
     this.time = time;
     this.location = location;
-    (width = "200px"), (height = "100px");
   }
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+const eventId = urlParams.get("id");
+
+console.log(eventId);
 
 window.onload = function () {
   getEvent(eventId);
 };
-
-const urlParams = new URLSearchParams(window.location.search);
-const eventId = urlParams.get("id");
 
 function getEvent(eventId) {
   fetch(`/event/${eventId}`)
