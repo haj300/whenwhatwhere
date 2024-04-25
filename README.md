@@ -21,7 +21,7 @@ The purpose is to substitue fb events.
 
 ## Tech stack
 
-### Front end
+### Frontend
 
 Javascript, HTML, CSS
 
