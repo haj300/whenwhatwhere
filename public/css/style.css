@@ -69,6 +69,11 @@ button {
   display: flex;
   flex-direction: column;
   -ms-flex-align: center;
-  cursor: pointer;
   width: 350px;
+}
+
+.event-title {
+  font-size: 1.5em;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
 }
