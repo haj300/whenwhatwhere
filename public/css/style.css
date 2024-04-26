@@ -27,7 +27,7 @@ button {
   margin: 0 auto;
 }
 
-#eventForm :is(label, input) {
+#eventForm :is(label, input, textarea) {
   display: block;
   text-align: start;
 }
@@ -76,4 +76,9 @@ button {
   font-size: 1.5em;
   margin-bottom: 0.5rem;
   cursor: pointer;
+}
+
+.description {
+  min-height: 6rem;
+  min-width: 24rem;
 }
