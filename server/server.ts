@@ -58,11 +58,9 @@ const addEvent = async (ctx: any) => {
     ctx.body = event;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // This is a validation error
       ctx.status = 400;
       ctx.body = { error: error.message };
     } else {
-      // This is an unexpected error
       ctx.status = 500;
       ctx.body = { error: (error as any).message };
       console.error(error);
