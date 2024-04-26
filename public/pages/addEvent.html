@@ -12,13 +12,22 @@
       <label for="name">title:</label>
       <input type="text" id="name" name="name" required />
       <label for="description">description:</label>
-      <input type="text" id="description" name="description" required />
+      <textarea
+        id="description"
+        name="description"
+        class="description"
+        required
+      >
+        description:
+      </textarea>
       <label for="time">time:</label>
       <input type="time" id="time" name="time" required />
       <label for="date">date:</label>
       <input type="date" id="date" name="date" required />
       <label for="location">location:</label>
       <input type="text" id="location" name="location" required />
+      <label for="link">link:</label>
+      <input type="url" id="link" name="link" />
       <label for="image">image:</label>
       <input type="file" id="image" name="file" accept="image/*" />
       <button type="submit">create</button>
