@@ -13,7 +13,7 @@ class PostEvent {
 
   async handleEventFormSubmit(event) {
     event.preventDefault();
-    const { name, description, image, date, time, location } =
+    const { name, description, image, date, time, location, link } =
       this.eventForm.elements;
 
     const dateValue = new Date(date.value);
@@ -26,7 +26,7 @@ class PostEvent {
     const formData = new FormData(this.eventForm);
     formData.append("file", image.files[0]);
 
-    let imageUrl;
+    let imageUrl = "";
     try {
       const response = await fetch("/uploadImage", {
         method: "POST",
@@ -47,6 +47,7 @@ class PostEvent {
       description: description.value,
       date: dateValue.toISOString(),
       location: location.value,
+      link: link.value,
       image: imageUrl,
     };
 
