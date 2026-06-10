@@ -1,3 +1,5 @@
+import { getEvents } from "./getEvents.js";
+
 document.addEventListener("DOMContentLoaded", (event) => {
   new PostEvent(document.getElementById("eventForm"));
 });
@@ -58,6 +60,7 @@ class PostEvent {
 
     try {
       await this.postEvent(eventData);
+      await getEvents();
     } catch (e) {
       console.error(e);
     }
