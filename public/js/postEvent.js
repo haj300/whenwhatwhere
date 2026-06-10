@@ -1,5 +1,3 @@
-import { getEvents } from "./getEvents.js";
-
 document.addEventListener("DOMContentLoaded", (event) => {
   new PostEvent(document.getElementById("eventForm"));
 });
@@ -60,12 +58,11 @@ class PostEvent {
 
     try {
       await this.postEvent(eventData);
-      await getEvents();
+      this.eventForm.reset();
+      window.location.href = "/";
     } catch (e) {
       console.error(e);
     }
-
-    this.eventForm.reset();
   }
 
   async postEvent(eventData) {
@@ -84,6 +81,7 @@ class PostEvent {
       }
     } catch (error) {
       console.error("Error:", error);
+      throw error;
     }
   }
 }
