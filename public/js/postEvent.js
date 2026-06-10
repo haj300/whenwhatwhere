@@ -27,19 +27,24 @@ class PostEvent {
     formData.append("file", image.files[0]);
 
     let imageUrl = "";
-    try {
-      const response = await fetch("/uploadImage", {
-        method: "POST",
-        body: formData,
-      });
-      if (response.headers.get("Content-Type") === "application/json") {
-        const data = await response.json();
-        imageUrl = data.url;
-      } else {
-        imageUrl = await response.text();
+    if (image.files[0]) {
+      try {
+        const response = await fetch("/uploadImage", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error(`Image upload failed: ${response.status}`);
+        }
+        if (response.headers.get("Content-Type") === "application/json") {
+          const data = await response.json();
+          imageUrl = data.url;
+        } else {
+          imageUrl = await response.text();
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
     }
 
     const eventData = {
