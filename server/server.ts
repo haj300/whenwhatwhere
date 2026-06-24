@@ -46,10 +46,10 @@ const addEvent = async (ctx: any) => {
   const eventData = {
     name: ctx.request.body.name,
     description: ctx.request.body.description,
-    time: ctx.request.body.time,
     date: ctx.request.body.date,
     location: ctx.request.body.location,
-    image: ctx.request.body.image,
+    link: ctx.request.body.link || null,
+    image: ctx.request.body.image || null,
   };
 
   try {
@@ -58,11 +58,9 @@ const addEvent = async (ctx: any) => {
     ctx.body = event;
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      // This is a validation error
       ctx.status = 400;
       ctx.body = { error: error.message };
     } else {
-      // This is an unexpected error
       ctx.status = 500;
       ctx.body = { error: (error as any).message };
       console.error(error);

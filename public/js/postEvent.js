@@ -13,7 +13,7 @@ class PostEvent {
 
   async handleEventFormSubmit(event) {
     event.preventDefault();
-    const { name, description, image, date, time, location } =
+    const { name, description, image, date, time, location, link } =
       this.eventForm.elements;
 
     const dateValue = new Date(date.value);
@@ -26,20 +26,25 @@ class PostEvent {
     const formData = new FormData(this.eventForm);
     formData.append("file", image.files[0]);
 
-    let imageUrl;
-    try {
-      const response = await fetch("/uploadImage", {
-        method: "POST",
-        body: formData,
-      });
-      if (response.headers.get("Content-Type") === "application/json") {
-        const data = await response.json();
-        imageUrl = data.url;
-      } else {
-        imageUrl = await response.text();
+    let imageUrl = "";
+    if (image.files[0]) {
+      try {
+        const response = await fetch("/uploadImage", {
+          method: "POST",
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error(`Image upload failed: ${response.status}`);
+        }
+        if (response.headers.get("Content-Type") === "application/json") {
+          const data = await response.json();
+          imageUrl = data.url;
+        } else {
+          imageUrl = await response.text();
+        }
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
     }
 
     const eventData = {
@@ -47,16 +52,17 @@ class PostEvent {
       description: description.value,
       date: dateValue.toISOString(),
       location: location.value,
+      link: link.value,
       image: imageUrl,
     };
 
     try {
       await this.postEvent(eventData);
+      this.eventForm.reset();
+      window.location.href = "/";
     } catch (e) {
       console.error(e);
     }
-
-    this.eventForm.reset();
   }
 
   async postEvent(eventData) {
@@ -75,6 +81,7 @@ class PostEvent {
       }
     } catch (error) {
       console.error("Error:", error);
+      throw error;
     }
   }
 }
