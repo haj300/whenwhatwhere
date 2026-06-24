@@ -2,6 +2,11 @@
   "name": "whenwhatwhere",
   "module": "index.html",
   "type": "module",
+  "scripts": {
+    "dev": "bun --hot run server/server.ts",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:generate": "bunx prisma generate"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
