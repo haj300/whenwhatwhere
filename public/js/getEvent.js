@@ -24,6 +24,10 @@ const eventId = urlParams.get("id");
 document.addEventListener("DOMContentLoaded", () => getEvent(eventId));
 
 async function getEvent(eventId) {
+  if (!eventId) {
+    document.getElementById("name").textContent = "Event not found.";
+    return;
+  }
   try {
     const eventData = await fetchEvent(eventId);
     const event = new EventDetail(
@@ -43,5 +47,6 @@ async function getEvent(eventId) {
     }
   } catch (e) {
     console.error(e);
+    document.getElementById("name").textContent = e.message || "Could not load event.";
   }
 }

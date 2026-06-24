@@ -5,6 +5,9 @@ type ValidationResult =
   | { ok: false; errors: string[] };
 
 export function validateNewEvent(input: unknown): ValidationResult {
+  if (typeof input !== "object" || input === null || Array.isArray(input)) {
+    return { ok: false, errors: ["request body must be a JSON object"] };
+  }
   const errors: string[] = [];
   const i = input as Record<string, unknown>;
 

@@ -10,8 +10,21 @@ class PostEvent {
     this.eventForm.addEventListener("submit", this.handleEventFormSubmit.bind(this));
   }
 
+  showError(msg) {
+    const el = document.getElementById("formError");
+    el.textContent = msg;
+    el.removeAttribute("hidden");
+  }
+
+  clearError() {
+    const el = document.getElementById("formError");
+    el.textContent = "";
+    el.setAttribute("hidden", "");
+  }
+
   async handleEventFormSubmit(event) {
     event.preventDefault();
+    this.clearError();
     const { name, description, image, date, time, location, link } = this.eventForm.elements;
 
     const dateValue = new Date(date.value);
@@ -27,6 +40,8 @@ class PostEvent {
         imageUrl = await uploadImage(formData);
       } catch (e) {
         console.error(e);
+        this.showError("Image upload failed. Remove the image or try again.");
+        return;
       }
     }
 
@@ -43,6 +58,7 @@ class PostEvent {
       window.location.href = "/";
     } catch (e) {
       console.error(e);
+      this.showError(e.message || "Could not create event. Please try again.");
     }
   }
 }
