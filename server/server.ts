@@ -1,18 +1,32 @@
 import fs from "fs";
 import path from "path";
 import Koa from "koa";
+import Router from "@koa/router";
 import { koaBody } from "koa-body";
 import serve from "koa-static";
-import Router from "@koa/router";
-import { Prisma, PrismaClient } from "@prisma/client";
 import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
+import { eventsRouter } from "./routes/events";
 
 dotenv.config();
 
-const app = new Koa();
-const router = new Router();
-const prisma = new PrismaClient();
+export const app = new Koa();
+
+// ── error middleware ────────────────────────────────────────────
+app.use(async (ctx, next) => {
+  try {
+    await next();
+  } catch (err) {
+    console.error(err);
+    ctx.status = 500;
+    ctx.body = { error: "Internal server error" };
+  }
+});
+
+// ── static files ────────────────────────────────────────────────
+app.use(serve(path.join("public")));
+
+// ── GCS upload (untouched) ──────────────────────────────────────
 const storageClient = new Storage({
   projectId: process.env.GCLOUD_PROJECT_ID,
   keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
@@ -20,102 +34,31 @@ const storageClient = new Storage({
 const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
 const bucket = storageClient.bucket(bucketName);
 
-app.use(serve(path.join("public")));
-
-// Connect to Prisma
-prisma.$connect();
-
-// Route handlers
-const uploadImage = async (ctx: any) => {
+const uploadImageHandler = async (ctx: any) => {
   const file = ctx.request.files.file[0];
   const gcsFile = bucket.file(file.newFilename);
-
   await new Promise((resolve, reject) => {
     fs.createReadStream(file.filepath)
       .pipe(gcsFile.createWriteStream())
       .on("error", reject)
       .on("finish", resolve);
   });
-
-  ctx.body = `https://storage.googleapis.com/${
-    bucket.name
-  }/${encodeURIComponent(file.newFilename)}`;
+  ctx.body = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(file.newFilename)}`;
 };
 
-const addEvent = async (ctx: any) => {
-  const eventData = {
-    name: ctx.request.body.name,
-    description: ctx.request.body.description,
-    date: ctx.request.body.date,
-    location: ctx.request.body.location,
-    link: ctx.request.body.link || null,
-    image: ctx.request.body.image || null,
-  };
+// ── routes ──────────────────────────────────────────────────────
+app.use(koaBody({ multipart: true }));
+app.use(eventsRouter.routes());
+app.use(eventsRouter.allowedMethods());
 
-  try {
-    const event = await prisma.event.create({ data: eventData });
-    ctx.status = 201;
-    ctx.body = event;
-  } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      ctx.status = 400;
-      ctx.body = { error: error.message };
-    } else {
-      ctx.status = 500;
-      ctx.body = { error: (error as any).message };
-      console.error(error);
-    }
-  }
-};
+const uploadRouter = new Router();
+uploadRouter.post("/uploadImage", uploadImageHandler);
+app.use(uploadRouter.routes());
 
-const getEvents = async (ctx: { body: any }) => {
-  const events = await prisma.event.findMany();
-  ctx.body = events;
-};
-
-const getEventById = async (ctx: {
-  params: { id: any };
-  body: any;
-  status: any;
-}) => {
-  const { id } = ctx.params;
-
-  try {
-    const event = await prisma.event.findUnique({
-      where: {
-        id: Number(id),
-      },
-    });
-    if (!event) {
-      ctx.status = 404;
-      return;
-    }
-    ctx.body = event;
-    console.log(ctx.body);
-  } catch (error) {
-    ctx.status = 500;
-    console.error(error);
-  }
-};
-
-router.post("/uploadImage", koaBody({ multipart: true }), uploadImage);
-router.post("/addEvent", koaBody({ multipart: true }), addEvent);
-router.get("/event/:id", getEventById);
-router.get("/events", getEvents);
-router.delete("/event/:id", async (ctx) => {
-  const { id } = ctx.params;
-  await prisma.event.delete({
-    where: {
-      id: Number(id),
-    },
+// ── listen (skipped when imported by tests) ─────────────────────
+if (process.env.NODE_ENV !== "test") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
   });
-  ctx.status = 204;
-});
-
-app.use(router.routes());
-app.use(router.allowedMethods());
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+}
