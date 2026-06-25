@@ -31,18 +31,10 @@
       <label for="image">image:</label>
       <input type="file" id="image" name="file" accept="image/*" />
       <button type="submit">create</button>
-      <p id="formError" hidden style="color:red"></p>
+      <p id="formError" hidden class="form-error"></p>
     </form>
     <div id="eventList"></div>
     <script type="module" src="../js/postEvent.js"></script>
     <script type="module" src="../js/getEvents.js"></script>
-    <script>
-      document.getElementById("name").value = "Lorem Ipsum";
-      document.getElementById("description").value =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent maximus dolor at turpis molestie porttitor in eu libero. Pellentesque at dolor lorem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam cursus vel purus id ullamcorper. Aenean ligula nisi, vehicula nec leo tempus, lacinia elementum ligula. Pellentesque dictum hendrerit tincidunt. Ut quis lacus dui. Nunc vitae dictum eros. Curabitur id varius lacus. Duis pulvinar neque odio, sit amet iaculis arcu porttitor eu.";
-      document.getElementById("time").value = "12:00";
-      document.getElementById("date").value = "2022-12-31";
-      document.getElementById("location").value = "Event Location";
-    </script>
   </body>
 </html>
