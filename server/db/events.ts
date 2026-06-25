@@ -17,7 +17,7 @@ export async function createEvent(data: NewEvent): Promise<event> {
     data: {
       name: data.name,
       description: data.description,
-      date: new Date(data.date),
+      date: data.date,
       location: data.location,
       link: data.link ?? null,
       image: data.image ?? null,

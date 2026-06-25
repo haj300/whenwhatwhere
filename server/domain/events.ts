@@ -40,5 +40,5 @@ export function validateNewEvent(input: unknown): ValidationResult {
   }
 
   if (errors.length > 0) return { ok: false, errors };
-  return { ok: true, event: { name, description, date, location, link, image } };
+  return { ok: true, event: { name, description, date: new Date(date), location, link, image } };
 }
