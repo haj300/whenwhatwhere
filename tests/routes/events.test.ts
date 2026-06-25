@@ -12,8 +12,8 @@ beforeAll(() => {
 });
 
 afterAll(async () => {
-  await prisma.$disconnect();
   server.close();
+  await prisma.$disconnect();
 });
 
 afterEach(async () => {
@@ -36,6 +36,25 @@ describe("POST /addEvent", () => {
     const body = await res.json();
     expect(body.id).toBeNumber();
     expect(body.name).toBe("New gig");
+  });
+
+  test("creates event with optional link and image fields", async () => {
+    const res = await fetch(`${baseUrl}/addEvent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Gig with link",
+        description: "Great show",
+        date: "2026-10-01T20:00:00.000Z",
+        location: "Nalen",
+        link: "https://nalen.com",
+        image: "https://example.com/img.jpg",
+      }),
+    });
+    expect(res.status).toBe(201);
+    const body = await res.json();
+    expect(body.link).toBe("https://nalen.com");
+    expect(body.image).toBe("https://example.com/img.jpg");
   });
 
   test("returns 400 for missing required fields", async () => {

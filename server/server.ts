@@ -35,7 +35,13 @@ const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
 const bucket = storageClient.bucket(bucketName);
 
 const uploadImageHandler = async (ctx: any) => {
-  const file = ctx.request.files.file[0];
+  const files = ctx.request.files?.file;
+  const file = Array.isArray(files) ? files[0] : files;
+  if (!file) {
+    ctx.status = 400;
+    ctx.body = { error: "No file provided" };
+    return;
+  }
   const gcsFile = bucket.file(file.newFilename);
   await new Promise((resolve, reject) => {
     fs.createReadStream(file.filepath)
