@@ -1,87 +1,64 @@
-document.addEventListener("DOMContentLoaded", (event) => {
+import { createEvent, uploadImage } from "./api.js";
+
+document.addEventListener("DOMContentLoaded", () => {
   new PostEvent(document.getElementById("eventForm"));
 });
 
 class PostEvent {
   constructor(eventForm) {
     this.eventForm = eventForm;
-    this.eventForm.addEventListener(
-      "submit",
-      this.handleEventFormSubmit.bind(this),
-    );
+    this.eventForm.addEventListener("submit", this.handleEventFormSubmit.bind(this));
+  }
+
+  showError(msg) {
+    const el = document.getElementById("formError");
+    el.textContent = msg;
+    el.removeAttribute("hidden");
+  }
+
+  clearError() {
+    const el = document.getElementById("formError");
+    el.textContent = "";
+    el.setAttribute("hidden", "");
   }
 
   async handleEventFormSubmit(event) {
     event.preventDefault();
-    const { name, description, image, date, time, location, link } =
-      this.eventForm.elements;
+    this.clearError();
+    const { name, description, image, date, time, location, link } = this.eventForm.elements;
 
     const dateValue = new Date(date.value);
     const timeValue = time.value.split(":");
-
     dateValue.setHours(timeValue[0]);
     dateValue.setMinutes(timeValue[1]);
-
-    // Upload the image to gc bucket first
-    const formData = new FormData(this.eventForm);
-    formData.append("file", image.files[0]);
 
     let imageUrl = "";
     if (image.files[0]) {
       try {
-        const response = await fetch("/uploadImage", {
-          method: "POST",
-          body: formData,
-        });
-        if (!response.ok) {
-          throw new Error(`Image upload failed: ${response.status}`);
-        }
-        if (response.headers.get("Content-Type") === "application/json") {
-          const data = await response.json();
-          imageUrl = data.url;
-        } else {
-          imageUrl = await response.text();
-        }
+        const formData = new FormData(this.eventForm);
+        formData.append("file", image.files[0]);
+        imageUrl = await uploadImage(formData);
       } catch (e) {
         console.error(e);
+        this.showError("Image upload failed. Remove the image or try again.");
+        return;
       }
     }
 
-    const eventData = {
-      name: name.value,
-      description: description.value,
-      date: dateValue.toISOString(),
-      location: location.value,
-      link: link.value,
-      image: imageUrl,
-    };
-
     try {
-      await this.postEvent(eventData);
+      await createEvent({
+        name: name.value,
+        description: description.value,
+        date: dateValue.toISOString(),
+        location: location.value,
+        link: link.value,
+        image: imageUrl,
+      });
       this.eventForm.reset();
       window.location.href = "/";
     } catch (e) {
       console.error(e);
-    }
-  }
-
-  async postEvent(eventData) {
-    try {
-      const response = await fetch("/addEvent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(eventData),
-      });
-      if (!response.ok) {
-        throw new Error(
-          `HTTP error! status: ${response.status} ${response.url}`,
-        );
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      throw error;
+      this.showError(e.message || "Could not create event. Please try again.");
     }
   }
 }
