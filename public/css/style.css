@@ -82,3 +82,7 @@ button {
   min-height: 6rem;
   min-width: 24rem;
 }
+
+.form-error {
+  color: red;
+}

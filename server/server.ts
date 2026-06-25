@@ -12,6 +12,22 @@ dotenv.config();
 
 export const app = new Koa();
 
+// ── security headers ────────────────────────────────────────────
+app.use(async (ctx, next) => {
+  ctx.set("X-Content-Type-Options", "nosniff");
+  ctx.set("X-Frame-Options", "DENY");
+  ctx.set("Referrer-Policy", "no-referrer");
+  ctx.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
+  ctx.set(
+    "Content-Security-Policy",
+    "default-src 'self'; img-src 'self' https://storage.googleapis.com; frame-ancestors 'none'"
+  );
+  if (ctx.secure) {
+    ctx.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  await next();
+});
+
 // ── error middleware ────────────────────────────────────────────
 app.use(async (ctx, next) => {
   try {
