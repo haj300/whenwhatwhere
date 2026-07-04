@@ -1,0 +1,23 @@
+{
+  "finding_index": 5,
+  "verdict": "Denied",
+  "gates": {
+    "source": "fail",
+    "sink": "fail",
+    "missing_control": "fail"
+  },
+  "root_cause": "",
+  "changes": [],
+  "remaining_risks": [],
+  "recommendations": [],
+  "summary": "Denied by policy (policy_unavailable_fail_closed). No patch generated.",
+  "severity": "HIGH",
+  "title": "Unbounded findMany() on GET /events exhausts process memory",
+  "file": "server/db/events.ts:7-8",
+  "mode": "fix",
+  "generated": "2026-07-01T09:46:35.903558+00:00",
+  "policy_action": "guidance_only",
+  "policy_reason": "policy_unavailable_fail_closed",
+  "final_verdict": "REJECT",
+  "diff_captured": false
+}

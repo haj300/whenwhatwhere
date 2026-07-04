@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "finding_id": "ed9458-finding-server/routes/events.ts-31",
+  "attempt": 1,
+  "max_attempts": 2,
+  "status": "deny",
+  "finding": {
+    "_source": "vvaharness s8 (verbatim Finding fields)",
+    "title": "Unauthenticated DELETE wipes any event with no auth",
+    "vuln_class": "CWE-862",
+    "cwe": "CWE-862",
+    "file": "server/routes/events.ts",
+    "line_start": 31,
+    "line_end": 37,
+    "source_ref": null,
+    "sink_ref": null,
+    "description": "",
+    "recommendation": "",
+    "code_snippet": "eventsRouter.delete(\"/event/:id\", async (ctx) => {\n  const id = Number(ctx.params.id);\n  if (isNaN(id)) { ctx.status = 404; return; }\n  const existing = await getEventById(id);   // existence-only check, no auth\n  if (!existing) { ctx.status = 404; return; }\n  await deleteEvent(id);                     // unconditional hard delete\n  ctx.status = 204;\n});",
+    "impact": "",
+    "exploit_scenario": "",
+    "preconditions": [],
+    "confidence": 0.0,
+    "votes": 0,
+    "verdict": null,
+    "verdict_confidence": null,
+    "cvss_vector": null,
+    "cvss_score": null,
+    "cvss_rating": null
+  },
+  "patch": {
+    "_source": "s10 remediation (filled in by remediation stage)",
+    "remediation_summary": "Denied by policy (policy_unavailable_fail_closed). No patch generated.",
+    "files_touched": [],
+    "diff": ""
+  },
+  "validation": {
+    "_source": "s11 validation (empty on input; written by validator)",
+    "fix_status": null,
+    "raw_score": null,
+    "merge_readiness": null,
+    "gate_scores": null,
+    "justification": null,
+    "conditions_for_full_fix": [],
+    "recommendations": []
+  }
+}

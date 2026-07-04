@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0",
+  "finding_id": "4df312-finding-server/server.ts-53",
+  "attempt": 1,
+  "max_attempts": 2,
+  "status": "deny",
+  "finding": {
+    "_source": "vvaharness s8 (verbatim Finding fields)",
+    "title": "Unauthenticated GCS upload with no type, size, or rate controls",
+    "vuln_class": "CWE-434",
+    "cwe": "CWE-434",
+    "file": "server/server.ts",
+    "line_start": 53,
+    "line_end": 78,
+    "source_ref": null,
+    "sink_ref": null,
+    "description": "",
+    "recommendation": "",
+    "code_snippet": "const uploadImageHandler = async (ctx: any) => {\n  const files = ctx.request.files?.file;          // untrusted multipart file\n  const file = Array.isArray(files) ? files[0] : files;\n  if (!file) { ctx.status = 400; ... return; }\n  const gcsFile = bucket.file(file.newFilename);  // UUID key, no extension\n  await new Promise((resolve, reject) => {\n    fs.createReadStream(file.filepath)             // no type/size check\n      .pipe(gcsFile.createWriteStream())           // no contentType option\n      .on(\"error\", reject)\n      .on(\"finish\", resolve);\n  });\n  ctx.body = `https://storage.googleapis.com/${bucket.name}/...`;\n};\n// ...\napp.use(koaBody({ multipart: true }));            // default 200 MB limit, no filter\n// ...\nuploadRouter.post(\"/uploadImage\", uploadImageHandler); // NO auth middleware",
+    "impact": "",
+    "exploit_scenario": "",
+    "preconditions": [],
+    "confidence": 0.0,
+    "votes": 0,
+    "verdict": null,
+    "verdict_confidence": null,
+    "cvss_vector": null,
+    "cvss_score": null,
+    "cvss_rating": null
+  },
+  "patch": {
+    "_source": "s10 remediation (filled in by remediation stage)",
+    "remediation_summary": "Denied by policy (policy_unavailable_fail_closed). No patch generated.",
+    "files_touched": [],
+    "diff": ""
+  },
+  "validation": {
+    "_source": "s11 validation (empty on input; written by validator)",
+    "fix_status": null,
+    "raw_score": null,
+    "merge_readiness": null,
+    "gate_scores": null,
+    "justification": null,
+    "conditions_for_full_fix": [],
+    "recommendations": []
+  }
+}
