@@ -1,0 +1,28 @@
+# Local development database only.
+# The Bun app runs natively on the host (see scripts/dev.sh) — only
+# Postgres is containerized, since it's the one external dependency.
+services:
+  db:
+    image: postgres:16-alpine # pinned version, not :latest — reproducible builds
+    container_name: whenwhatwhere-db
+    environment:
+      POSTGRES_USER: wjw
+      POSTGRES_PASSWORD: wjw_dev_pw # local-only dev credential, never used in production
+      POSTGRES_DB: whenwhatwhere
+    ports:
+      # Bound to 127.0.0.1 so the database is reachable only from this
+      # machine — not from other devices on your network. Dropping the
+      # "127.0.0.1:" prefix would expose it on 0.0.0.0 (all interfaces).
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data # data survives `docker compose down`
+    healthcheck:
+      # Lets scripts/dev.sh wait until Postgres actually accepts
+      # connections, rather than just "container started".
+      test: ["CMD-SHELL", "pg_isready -U wjw -d whenwhatwhere"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:

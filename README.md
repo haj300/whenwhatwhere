@@ -38,7 +38,7 @@ PostgreSQL (via Prisma)
 ### Prerequisites
 
 - [Bun](https://bun.sh) installed
-- PostgreSQL running locally (e.g. via Homebrew: `brew services start postgresql`)
+- [Docker](https://docs.docker.com/get-docker/) installed (runs the local Postgres — you don't need Postgres installed on your machine)
 
 ### 1. Install dependencies
 
@@ -46,24 +46,28 @@ PostgreSQL (via Prisma)
 
 ### 2. Configure environment
 
-Copy the template and fill in your values:
+Copy the template:
 
     cp .env.template .env
 
-- `DATABASE_URL` — your local PostgreSQL connection string
+- `DATABASE_URL` — already set to the Docker Postgres; works out of the box.
+- `JWT_SECRET` — set this to any long random string for local dev.
 - `GCLOUD_*` — Google Cloud Storage credentials for image uploads.
   Optional: the app runs without them, but uploading images will fail.
 
-### 3. Set up the database
+### 3. Start everything
 
-Applies migrations and generates the Prisma client (required before first run):
+    bun run dev
 
-    bunx prisma migrate dev
+This one command:
 
-### 4. Start the server
-
-    bun --hot run server/server.ts
+1. starts Postgres in Docker and waits until it's ready (`docker compose up -d --wait db`),
+2. applies database migrations (`bunx prisma migrate dev`),
+3. starts the server with hot reload (`bun --hot`).
 
 Then open http://localhost:3000
 
-`--hot` enables hot reload on file changes.
+The database runs in the background even after you stop the server. To stop it:
+
+    docker compose down        # stops Postgres, keeps your data
+    docker compose down -v      # also deletes the data volume (fresh start)
