@@ -7,6 +7,7 @@ import serve from "koa-static";
 import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import { eventsRouter } from "./routes/events";
+import { authRouter } from "./routes/auth";
 
 dotenv.config();
 
@@ -42,13 +43,19 @@ app.use(async (ctx, next) => {
 // ── static files ────────────────────────────────────────────────
 app.use(serve(path.join("public")));
 
-// ── GCS upload (untouched) ──────────────────────────────────────
-const storageClient = new Storage({
-  projectId: process.env.GCLOUD_PROJECT_ID,
-  keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
-});
+// ── image upload: GCS in production, local filesystem in dev ────
+// When GCLOUD_STORAGE_BUCKET is set we stream to Google Cloud Storage.
+// Otherwise (local dev) we save under public/uploads/ and serve it as a
+// static file — so local development needs no cloud credentials at all.
 const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
-const bucket = storageClient.bucket(bucketName);
+const bucket = bucketName
+  ? new Storage({
+      projectId: process.env.GCLOUD_PROJECT_ID,
+      keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
+    }).bucket(bucketName)
+  : null;
+
+const UPLOAD_DIR = path.join("public", "uploads");
 
 const uploadImageHandler = async (ctx: any) => {
   const files = ctx.request.files?.file;
@@ -58,18 +65,34 @@ const uploadImageHandler = async (ctx: any) => {
     ctx.body = { error: "No file provided" };
     return;
   }
-  const gcsFile = bucket.file(file.newFilename);
-  await new Promise((resolve, reject) => {
-    fs.createReadStream(file.filepath)
-      .pipe(gcsFile.createWriteStream())
-      .on("error", reject)
-      .on("finish", resolve);
-  });
-  ctx.body = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(file.newFilename)}`;
+
+  // Production: stream the upload straight to Google Cloud Storage.
+  if (bucket) {
+    const gcsFile = bucket.file(file.newFilename);
+    await new Promise((resolve, reject) => {
+      fs.createReadStream(file.filepath)
+        .pipe(gcsFile.createWriteStream())
+        .on("error", reject)
+        .on("finish", resolve);
+    });
+    ctx.body = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(file.newFilename)}`;
+    return;
+  }
+
+  // Local dev: copy into public/uploads/ and return a same-origin URL.
+  // path.basename() strips any directory components from the generated
+  // name, so a crafted filename can't escape the uploads folder
+  // (path-traversal protection).
+  const safeName = path.basename(file.newFilename);
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  await fs.promises.copyFile(file.filepath, path.join(UPLOAD_DIR, safeName));
+  ctx.body = `/uploads/${encodeURIComponent(safeName)}`;
 };
 
 // ── routes ──────────────────────────────────────────────────────
 app.use(koaBody({ multipart: true }));
+app.use(authRouter.routes());
+app.use(authRouter.allowedMethods());
 app.use(eventsRouter.routes());
 app.use(eventsRouter.allowedMethods());
 

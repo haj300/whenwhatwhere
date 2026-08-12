@@ -178,3 +178,6 @@ dist
 docs/
 
 GCP/
+
+# locally uploaded images (dev image-upload fallback)
+public/uploads/

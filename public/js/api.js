@@ -18,6 +18,9 @@ async function request(method, path, body) {
   return res.json();
 }
 
+export const login = (data) => request("POST", "/auth/login", data);
+export const getSession = () => request("GET", "/auth/me");
+export const logout = () => request("POST", "/auth/logout");
 export const fetchEvents = () => request("GET", "/events");
 export const fetchEvent = (id) => request("GET", `/event/${id}`);
 export const createEvent = (data) => request("POST", "/addEvent", data);

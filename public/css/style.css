@@ -101,3 +101,9 @@ button {
   text-decoration: none;
   font: inherit;
 }
+
+/* .button's own `display` would otherwise override the browser's
+   default hiding behavior for [hidden] elements. */
+.button[hidden] {
+  display: none;
+}

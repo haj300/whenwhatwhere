@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "docker compose up -d --wait db && bunx prisma migrate dev && bun --hot run server/server.ts",
     "db:migrate": "bunx prisma migrate dev",
-    "db:generate": "bunx prisma generate"
+    "db:generate": "bunx prisma generate",
+    "db:seed": "bun run prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

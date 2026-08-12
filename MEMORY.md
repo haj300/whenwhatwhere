@@ -7,6 +7,7 @@ Small tasks, improvements, and decisions to revisit. Add things here as they com
 ## Improvements to revisit
 
 - **Frontend type checking** — `api.js` and other public JS files could get `@ts-check` + JSDoc annotations for VS Code type safety without a build step. Requires adding `"checkJs": true` to `tsconfig.json`. Deferred: keeping frontend as plain JS for now.
+- **Invite system is disconnected end-to-end** — `POST /auth/setup` works and expects a valid invite token, but nothing creates `Invite` rows and there's no email-sending anywhere in the project. Real signup is currently unusable. For local dev/demo, `prisma/seed.ts` bypasses this entirely (creates a `User` directly, no invite/token/email involved) — that script is a dev shortcut, not a preview of the real flow. Needs: an invite-creation path (script or admin route) + a way to deliver the raw token (email service, or manually share the link for now).
 
 ---
 
