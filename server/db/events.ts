@@ -12,7 +12,10 @@ export async function getEventById(id: number): Promise<event | null> {
   return prisma.event.findUnique({ where: { id } });
 }
 
-export async function createEvent(data: NewEvent): Promise<event> {
+export async function createEvent(
+  data: NewEvent,
+  createdById: number,
+): Promise<event> {
   return prisma.event.create({
     data: {
       name: data.name,
@@ -21,6 +24,7 @@ export async function createEvent(data: NewEvent): Promise<event> {
       location: data.location,
       link: data.link ?? null,
       image: data.image ?? null,
+      createdById: createdById,
     },
   });
 }

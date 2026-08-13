@@ -174,4 +174,18 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-GCP/
+.agents/
+docs/
+
+skills-lock.json
+
+# locally uploaded images (dev image-upload fallback)
+public/uploads/
+
+# local project notes / instructions (not for version control)
+CLAUDE.md
+MEMORY.md
+
+# security scan reports and remediation evidence
+security-scan/
+security-remediation/

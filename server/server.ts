@@ -4,13 +4,37 @@ import Koa from "koa";
 import Router from "@koa/router";
 import { koaBody } from "koa-body";
 import serve from "koa-static";
-import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import { eventsRouter } from "./routes/events";
+import { authRouter } from "./routes/auth";
 
 dotenv.config();
 
 export const app = new Koa();
+
+// In production, TLS is terminated by nginx — the app only ever sees
+// plain HTTP from it. `proxy = true` tells Koa to trust the
+// X-Forwarded-Proto header nginx sets, so `ctx.secure` (and therefore
+// the HSTS header below) reflects the original HTTPS request. Safe only
+// because the app has no public port of its own — nginx is the only
+// thing that can ever reach it, so nothing else can forge that header.
+app.proxy = true;
+
+// ── security headers ────────────────────────────────────────────
+app.use(async (ctx, next) => {
+  ctx.set("X-Content-Type-Options", "nosniff");
+  ctx.set("X-Frame-Options", "DENY");
+  ctx.set("Referrer-Policy", "no-referrer");
+  ctx.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
+  ctx.set(
+    "Content-Security-Policy",
+    "default-src 'self'; img-src 'self'; frame-ancestors 'none'"
+  );
+  if (ctx.secure) {
+    ctx.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+  }
+  await next();
+});
 
 // ── error middleware ────────────────────────────────────────────
 app.use(async (ctx, next) => {
@@ -26,13 +50,11 @@ app.use(async (ctx, next) => {
 // ── static files ────────────────────────────────────────────────
 app.use(serve(path.join("public")));
 
-// ── GCS upload (untouched) ──────────────────────────────────────
-const storageClient = new Storage({
-  projectId: process.env.GCLOUD_PROJECT_ID,
-  keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
-});
-const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
-const bucket = storageClient.bucket(bucketName);
+// ── image upload: local filesystem ───────────────────────────────
+// Uploaded images are saved under public/uploads/ and served as static
+// files. In production this directory is a persistent Volume mount
+// (see app.container) so images survive redeploys.
+const UPLOAD_DIR = path.join("public", "uploads");
 
 const uploadImageHandler = async (ctx: any) => {
   const files = ctx.request.files?.file;
@@ -42,18 +64,20 @@ const uploadImageHandler = async (ctx: any) => {
     ctx.body = { error: "No file provided" };
     return;
   }
-  const gcsFile = bucket.file(file.newFilename);
-  await new Promise((resolve, reject) => {
-    fs.createReadStream(file.filepath)
-      .pipe(gcsFile.createWriteStream())
-      .on("error", reject)
-      .on("finish", resolve);
-  });
-  ctx.body = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(file.newFilename)}`;
+
+  // path.basename() strips any directory components from the generated
+  // name, so a crafted filename can't escape the uploads folder
+  // (path-traversal protection).
+  const safeName = path.basename(file.newFilename);
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  await fs.promises.copyFile(file.filepath, path.join(UPLOAD_DIR, safeName));
+  ctx.body = `/uploads/${encodeURIComponent(safeName)}`;
 };
 
 // ── routes ──────────────────────────────────────────────────────
 app.use(koaBody({ multipart: true }));
+app.use(authRouter.routes());
+app.use(authRouter.allowedMethods());
 app.use(eventsRouter.routes());
 app.use(eventsRouter.allowedMethods());
 

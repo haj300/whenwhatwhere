@@ -11,12 +11,13 @@
     <h1 id="appTitle">whenwhatwhere</h1>
     <div id="app">
       <p>STOCKHOLM. Music events. Add your own.</p>
-      <button onclick="window.location.href='pages/addEvent.html'">
-        Create event
-      </button>
+      <a href="pages/addEvent.html" class="button">Create event</a>
+      <a href="pages/login.html" class="button" id="loginLink">Log in</a>
+      <button class="button" id="logoutLink" hidden>Log out</button>
     </div>
     <div id="eventList"></div>
     <p id="eventTitle"></p>
     <script type="module" src="js/getEvents.js"></script>
+    <script type="module" src="js/session.js"></script>
   </body>
 </html>

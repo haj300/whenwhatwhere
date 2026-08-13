@@ -7,6 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  CONTRIBUTOR
+  ADMIN
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  email    String   @unique @db.VarChar(255)
+  passwordHash String   @db.VarChar(255)
+  role     Role     @default(CONTRIBUTOR)
+  events   event[]
+}
+
+model Invite {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  role      Role     @default(CONTRIBUTOR)
+  tokenHash String   @unique @db.VarChar(64)
+  expiresAt DateTime @db.Timestamp(6)
+}
+
 model event {
   id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(255)
@@ -15,4 +36,6 @@ model event {
   date        DateTime @db.Timestamp(6)
   location    String   @db.VarChar(255)
   link        String?  @db.VarChar(255)
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdById Int
 }

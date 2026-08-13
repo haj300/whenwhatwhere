@@ -82,3 +82,28 @@ button {
   min-height: 6rem;
   min-width: 24rem;
 }
+
+.form-error {
+  color: red;
+}
+
+/* Link styled to look like a button (see index.html "Create event").
+   A plain <a> avoids the inline-JS the CSP blocks. */
+.button {
+  display: inline-block;
+  cursor: pointer;
+  margin: 10px;
+  padding: 4px 12px;
+  border: 1px solid #767676;
+  border-radius: 3px;
+  background-color: #efefef;
+  color: #000;
+  text-decoration: none;
+  font: inherit;
+}
+
+/* .button's own `display` would otherwise override the browser's
+   default hiding behavior for [hidden] elements. */
+.button[hidden] {
+  display: none;
+}
