@@ -20,7 +20,15 @@ async function request(method, path, body) {
 
 export const login = (data) => request("POST", "/auth/login", data);
 export const setup = (data) => request("POST", "/auth/setup", data);
-export const getSession = () => request("GET", "/auth/me");
+// Memoized so multiple callers on one page load (session.js, getEvents.js)
+// share a single /auth/me request. Login/logout/setup trigger full-page
+// reloads, which re-evaluate this module and reset the cache — so a memoized
+// result can't go stale across an auth-state change.
+let sessionPromise;
+export function getSession() {
+  sessionPromise ??= request("GET", "/auth/me");
+  return sessionPromise;
+}
 export const logout = () => request("POST", "/auth/logout");
 export const fetchEvents = () => request("GET", "/events");
 export const fetchEvent = (id) => request("GET", `/event/${id}`);
