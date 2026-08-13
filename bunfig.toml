@@ -1,0 +1,3 @@
+[test]
+# Runs before any test file — the database safety guard (see tests/setup.ts).
+preload = ["./tests/setup.ts"]
