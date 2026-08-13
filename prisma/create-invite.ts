@@ -11,7 +11,9 @@ import {
 import { generateToken, hashToken } from "../server/auth/tokens";
 
 const VALID_ROLES: Role[] = ["CONTRIBUTOR", "ADMIN"];
-const EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days — matches the session length elsewhere
+const EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days 
+
+const BASE_URL = process.env.APP_BASE_URL ?? "http://localhost:3000";
 
 async function main() {
   const [email, roleArg] = process.argv.slice(2);
@@ -51,8 +53,9 @@ async function main() {
     expiresAt: new Date(Date.now() + EXPIRY_MS),
   });
 
-  console.log(`Invite created for ${email} (role: ${role}), valid 7 days.`);
-  console.log(`  https://whenwhatwhere.org/pages/setup.html#token=${rawToken}`);
+  const expiryDays = EXPIRY_MS / (24 * 60 * 60 * 1000);
+  console.log(`Invite created for ${email} (role: ${role}), valid ${expiryDays} days.`);
+  console.log(`  ${BASE_URL}/pages/setup.html#token=${rawToken}`);
 }
 
 main()
