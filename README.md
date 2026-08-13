@@ -1,23 +1,20 @@
 # whenwhatwhere
 
 A calendar to add and find music events in Stockholm, Sweden.
-Users will be able to login and create their personal page, as well as adding and attending events.
-The purpose is to substitue fb events.
+Users will be able to login and create events.
 
 ## Core features
 
 - Create events
 - Post events
-- Attend events
-- Search events
 - Display calendar
 - User login
-- User personal page
 
 ### Future features
 
-- Forum
-- Other cities in Sweden
+- Forum?
+- Other cities in Sweden?
+- Personal page?
 
 ## Tech stack
 
@@ -51,9 +48,8 @@ Copy the template:
     cp .env.template .env
 
 - `DATABASE_URL` — already set to the Docker Postgres; works out of the box.
-- `JWT_SECRET` — set this to any long random string for local dev.
-- `GCLOUD_*` — Google Cloud Storage credentials for image uploads.
-  Optional: the app runs without them, but uploading images will fail.
+- `JWT_SECRET` — set this to a random string of 32+ characters; the app
+  refuses to start otherwise.
 
 ### 3. Start everything
 
