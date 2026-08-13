@@ -1,6 +1,12 @@
-import { createEvent, uploadImage } from "./api.js";
+import { createEvent, uploadImage, getSession } from "./api.js";
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await getSession();
+  } catch {
+    window.location.href = "login.html";
+    return;
+  }
   new PostEvent(document.getElementById("eventForm"));
 });
 
