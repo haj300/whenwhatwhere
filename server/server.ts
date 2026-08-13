@@ -4,7 +4,6 @@ import Koa from "koa";
 import Router from "@koa/router";
 import { koaBody } from "koa-body";
 import serve from "koa-static";
-import { Storage } from "@google-cloud/storage";
 import dotenv from "dotenv";
 import { eventsRouter } from "./routes/events";
 import { authRouter } from "./routes/auth";
@@ -12,6 +11,14 @@ import { authRouter } from "./routes/auth";
 dotenv.config();
 
 export const app = new Koa();
+
+// In production, TLS is terminated by nginx — the app only ever sees
+// plain HTTP from it. `proxy = true` tells Koa to trust the
+// X-Forwarded-Proto header nginx sets, so `ctx.secure` (and therefore
+// the HSTS header below) reflects the original HTTPS request. Safe only
+// because the app has no public port of its own — nginx is the only
+// thing that can ever reach it, so nothing else can forge that header.
+app.proxy = true;
 
 // ── security headers ────────────────────────────────────────────
 app.use(async (ctx, next) => {
@@ -21,7 +28,7 @@ app.use(async (ctx, next) => {
   ctx.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
   ctx.set(
     "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' https://storage.googleapis.com; frame-ancestors 'none'"
+    "default-src 'self'; img-src 'self'; frame-ancestors 'none'"
   );
   if (ctx.secure) {
     ctx.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
@@ -43,18 +50,10 @@ app.use(async (ctx, next) => {
 // ── static files ────────────────────────────────────────────────
 app.use(serve(path.join("public")));
 
-// ── image upload: GCS in production, local filesystem in dev ────
-// When GCLOUD_STORAGE_BUCKET is set we stream to Google Cloud Storage.
-// Otherwise (local dev) we save under public/uploads/ and serve it as a
-// static file — so local development needs no cloud credentials at all.
-const bucketName = process.env.GCLOUD_STORAGE_BUCKET || "";
-const bucket = bucketName
-  ? new Storage({
-      projectId: process.env.GCLOUD_PROJECT_ID,
-      keyFilename: process.env.GCLOUD_APPLICATION_CREDENTIALS,
-    }).bucket(bucketName)
-  : null;
-
+// ── image upload: local filesystem ───────────────────────────────
+// Uploaded images are saved under public/uploads/ and served as static
+// files. In production this directory is a persistent Volume mount
+// (see app.container) so images survive redeploys.
 const UPLOAD_DIR = path.join("public", "uploads");
 
 const uploadImageHandler = async (ctx: any) => {
@@ -66,20 +65,6 @@ const uploadImageHandler = async (ctx: any) => {
     return;
   }
 
-  // Production: stream the upload straight to Google Cloud Storage.
-  if (bucket) {
-    const gcsFile = bucket.file(file.newFilename);
-    await new Promise((resolve, reject) => {
-      fs.createReadStream(file.filepath)
-        .pipe(gcsFile.createWriteStream())
-        .on("error", reject)
-        .on("finish", resolve);
-    });
-    ctx.body = `https://storage.googleapis.com/${bucket.name}/${encodeURIComponent(file.newFilename)}`;
-    return;
-  }
-
-  // Local dev: copy into public/uploads/ and return a same-origin URL.
   // path.basename() strips any directory components from the generated
   // name, so a crafted filename can't escape the uploads folder
   // (path-traversal protection).

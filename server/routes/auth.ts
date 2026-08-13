@@ -49,6 +49,7 @@ authRouter.post("/auth/setup", async (ctx) => {
 
   const token = signToken({ userId: user.id, role: user.role });
   ctx.cookies.set("token", token, cookieOpts);
+  ctx.status = 201;
 });
 
 authRouter.post("/auth/login", async (ctx) => {
