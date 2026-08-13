@@ -177,6 +177,8 @@ dist
 .agents/
 docs/
 
+skills-lock.json
+
 # locally uploaded images (dev image-upload fallback)
 public/uploads/
 
