@@ -1,4 +1,4 @@
-import { fetchEvents, removeEvent } from "./api.js";
+import { fetchEvents, removeEvent, getSession } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", getEvents);
 
@@ -6,6 +6,13 @@ export async function getEvents() {
   try {
     const eventList = document.getElementById("eventList");
     eventList.innerHTML = "";
+    // Who's viewing? null when not logged in (getSession throws on 401).
+    let me = null;
+    try {
+      me = await getSession();
+    } catch {
+      me = null;
+    }
     const events = await fetchEvents();
     events.forEach((event) => {
       const eventItem = createAndAppend("div", eventList, { class: "event-item" });
@@ -20,15 +27,20 @@ export async function getEvents() {
       eventTitle.addEventListener("click", () => {
         window.location.href = `/pages/event.html?id=${event.id}`;
       });
-      const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event", class: "button" });
-      deleteButton.addEventListener("click", async () => {
-        try {
-          await removeEvent(event.id);
-          eventItem.remove();
-        } catch (e) {
-          console.error(e);
-        }
-      });
+
+      const canDelete =
+        me && (me.role === "ADMIN" || event.createdById === me.userId);
+      if (canDelete) {
+        const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event", class: "button" });
+        deleteButton.addEventListener("click", async () => {
+          try {
+            await removeEvent(event.id);
+            eventItem.remove();
+          } catch (e) {
+            console.error(e);
+          }
+        });
+      }
     });
   } catch (e) {
     console.error(e);

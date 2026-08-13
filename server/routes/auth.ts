@@ -5,6 +5,7 @@ import { hashToken } from "../auth/tokens";
 import { signToken, verifyToken } from "../auth/jwt";
 import { loginLimiter } from "../auth/rateLimit";
 import { requireAuth } from "../middleware/auth";
+import { validatePassword } from "../domain/password";
 
 const cookieOpts = {
   httpOnly: true,
@@ -24,10 +25,17 @@ authRouter.post("/auth/setup", async (ctx) => {
   const inviteToken =
     typeof body.inviteToken === "string" ? body.inviteToken : "";
 
-  const invite = await getInviteByTokenHash(hashToken(inviteToken));
-  if (!invite) {
+  const passwordError = validatePassword(password);
+  if (passwordError) {
     ctx.status = 400;
-    ctx.body = { error: "Invalid invite token" };
+    ctx.body = { error: passwordError };
+    return;
+  }
+
+  const invite = await getInviteByTokenHash(hashToken(inviteToken));
+  if (!invite || invite.expiresAt < new Date()) {
+    ctx.status = 400;
+    ctx.body = { error: "Invalid or expired invite" };
     return;
   }
   const existingUser = await getUserByEmail(invite.email);
@@ -50,6 +58,7 @@ authRouter.post("/auth/setup", async (ctx) => {
   const token = signToken({ userId: user.id, role: user.role });
   ctx.cookies.set("token", token, cookieOpts);
   ctx.status = 201;
+  ctx.body = { email: user.email, role: user.role };
 });
 
 authRouter.post("/auth/login", async (ctx) => {

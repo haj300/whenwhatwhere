@@ -14,6 +14,10 @@ export async function getInviteByTokenHash(tokenHash: string): Promise<Invite | 
   return prisma.invite.findUnique({ where: { tokenHash } });
 }
 
+export async function getInviteByEmail(email: string): Promise<Invite | null> {
+  return prisma.invite.findUnique({ where: { email } });
+}
+
 export async function deleteInvite(id: number): Promise<void> {
   await prisma.invite.delete({ where: { id } });
 }
