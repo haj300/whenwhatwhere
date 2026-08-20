@@ -58,8 +58,18 @@ button {
   align-self: flex-start;
 }
 
-#eventList :is(img) {
+.event-image {
+  max-width: 350px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#eventList .event-image {
   margin-bottom: 3%;
+  cursor: pointer;
 }
 
 .event-item {

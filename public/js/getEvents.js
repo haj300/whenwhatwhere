@@ -17,7 +17,7 @@ export async function getEvents() {
     events.forEach((event) => {
       const eventItem = createAndAppend("div", eventList, { class: "event-item" });
       const eventTitle = createAndAppend("h2", eventItem, { text: event.name, class: "event-title" });
-      createAndAppend("img", eventItem, { src: event.image });
+      const eventImage = createAndAppend("img", eventItem, { src: event.image, class: "event-image" });
       createAndAppend("h4", eventItem, { text: "Description: " });
       createAndAppend("p", eventItem, { text: `${event.description}` });
       createAndAppend("h4", eventItem, { text: "Location: " });
@@ -28,9 +28,11 @@ export async function getEvents() {
         createAndAppend("h4", eventItem, { text: "Link: " });
         createAndAppend("a", eventItem, { text: event.link, href: event.link });
       }
-      eventTitle.addEventListener("click", () => {
+      const goToDetails = () => {
         window.location.href = `/pages/event.html?id=${event.id}`;
-      });
+      };
+      eventTitle.addEventListener("click", goToDetails);
+      eventImage.addEventListener("click", goToDetails);
 
       const canDelete =
         me && (me.role === "ADMIN" || event.createdById === me.userId);
