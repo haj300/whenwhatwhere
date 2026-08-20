@@ -24,6 +24,10 @@ export async function getEvents() {
       createAndAppend("p", eventItem, { text: `${event.location}` });
       createAndAppend("h4", eventItem, { text: "Date: " });
       createAndAppend("p", eventItem, { text: `${event.date.slice(0, 10)} at ${event.date.slice(11, 16)}` });
+      if (event.link) {
+        createAndAppend("h4", eventItem, { text: "Link: " });
+        createAndAppend("a", eventItem, { text: event.link, href: event.link });
+      }
       eventTitle.addEventListener("click", () => {
         window.location.href = `/pages/event.html?id=${event.id}`;
       });
@@ -47,10 +51,15 @@ export async function getEvents() {
   }
 }
 
-function createAndAppend(tagName, parentElement, { text, src, class: className } = {}) {
+function createAndAppend(tagName, parentElement, { text, src, href, class: className } = {}) {
   const element = document.createElement(tagName);
   if (text) element.textContent = text;
   if (src) element.src = src;
+  if (href) {
+    element.href = href;
+    element.target = "_blank";
+    element.rel = "noopener noreferrer";
+  }
   if (className) element.classList.add(className);
   parentElement.appendChild(element);
   return element;
