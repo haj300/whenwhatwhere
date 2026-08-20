@@ -21,7 +21,7 @@ const COMMON_PASSWORDS = new Set<string>([
   "superman1234",
 ]);
 
-const MIN_LENGTH = 12;
+const MIN_LENGTH = 8;
 const MAX_LENGTH = 128;
 
 export function validatePassword(password: string): string | null {
