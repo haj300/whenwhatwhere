@@ -1,4 +1,5 @@
 import { fetchEvent } from "./api.js";
+import { formatDate } from "./format.js";
 
 class EventDetail {
   constructor(name, description, image, date, location, link) {
@@ -9,13 +10,6 @@ class EventDetail {
     this.location = location;
     this.link = link;
   }
-}
-
-function formatDate(iso) {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString("sv-SE", { weekday: "short", day: "numeric", month: "short" });
-  const time = d.toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" });
-  return `${date} · ${time}`;
 }
 
 const urlParams = new URLSearchParams(window.location.search);
