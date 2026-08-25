@@ -117,3 +117,8 @@ button {
 .button[hidden] {
   display: none;
 }
+
+#eventTabs .button.active {
+  background-color: #666;
+  color: #fff;
+}
