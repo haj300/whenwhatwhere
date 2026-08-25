@@ -1,4 +1,10 @@
-import { createEvent, updateEvent, fetchEvent, getSession, uploadImage } from "./api.js";
+import {
+  createEvent,
+  updateEvent,
+  fetchEvent,
+  getSession,
+  uploadImage,
+} from "./api.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const eventId = new URLSearchParams(window.location.search).get("id");
@@ -11,9 +17,29 @@ class PostEvent {
     this.eventId = eventId;
     this.existingImageUrl = null;
     this.objectUrl = null;
-    this.eventForm.addEventListener("submit", this.handleEventFormSubmit.bind(this));
-    this.eventForm.elements.image.addEventListener("change", this.previewSelectedImage.bind(this));
-    if (eventId) this.enterEditMode(eventId);
+    this.eventForm.addEventListener(
+      "submit",
+      this.handleEventFormSubmit.bind(this),
+    );
+    this.eventForm.elements.image.addEventListener(
+      "change",
+      this.previewSelectedImage.bind(this),
+    );
+    if (eventId) {
+      this.enterEditMode(eventId);
+    } else {
+      this.requireLoggedIn();
+    }
+  }
+
+  async requireLoggedIn() {
+    try {
+      await getSession();
+    } catch {
+      this.blockForm(
+        "Sorryyyyyy you must be logged in to create an event.. ask the fast shark for an invite!!",
+      );
+    }
   }
 
   previewSelectedImage() {
@@ -53,7 +79,8 @@ class PostEvent {
       this.blockForm("Could not load event.");
       return;
     }
-    const canEdit = me && (me.role === "ADMIN" || existing.createdById === me.userId);
+    const canEdit =
+      me && (me.role === "ADMIN" || existing.createdById === me.userId);
     if (!canEdit) {
       this.blockForm("You don't have permission to edit this event.");
       return;
@@ -69,7 +96,8 @@ class PostEvent {
   }
 
   prefillForm(existing) {
-    const { name, description, date, time, location, link } = this.eventForm.elements;
+    const { name, description, date, time, location, link } =
+      this.eventForm.elements;
     const eventDate = new Date(existing.date);
     const pad = (n) => String(n).padStart(2, "0");
     name.value = existing.name;
@@ -97,7 +125,8 @@ class PostEvent {
   async handleEventFormSubmit(event) {
     event.preventDefault();
     this.clearError();
-    const { name, description, image, date, time, location, link } = this.eventForm.elements;
+    const { name, description, image, date, time, location, link } =
+      this.eventForm.elements;
 
     const dateValue = new Date(date.value);
     const timeValue = time.value.split(":");
