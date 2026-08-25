@@ -1,14 +1,15 @@
-import { fetchEvent } from "./api.js";
+import { fetchEvent, getSession } from "./api.js";
 import { formatDate } from "./format.js";
 
 class EventDetail {
-  constructor(name, description, image, date, location, link) {
+  constructor(name, description, image, date, location, link, createdById) {
     this.name = name;
     this.description = description;
     this.image = image;
     this.date = date;
     this.location = location;
     this.link = link;
+    this.createdById = createdById;
   }
 }
 
@@ -26,7 +27,7 @@ async function getEvent(eventId) {
     const eventData = await fetchEvent(eventId);
     const event = new EventDetail(
       eventData.name, eventData.description, eventData.image,
-      eventData.date, eventData.location, eventData.link,
+      eventData.date, eventData.location, eventData.link, eventData.createdById,
     );
     document.getElementById("name").textContent = event.name;
     document.getElementById("description").textContent = event.description;
@@ -38,6 +39,19 @@ async function getEvent(eventId) {
       linkEl.href = event.link;
       linkEl.textContent = event.link;
       linkEl.removeAttribute("hidden");
+    }
+
+    let me = null;
+    try {
+      me = await getSession();
+    } catch {
+      me = null;
+    }
+    const canEdit = me && (me.role === "ADMIN" || event.createdById === me.userId);
+    if (canEdit) {
+      const editLink = document.getElementById("editLink");
+      editLink.href = `/pages/addEvent.html?id=${eventId}`;
+      editLink.removeAttribute("hidden");
     }
   } catch (e) {
     console.error(e);

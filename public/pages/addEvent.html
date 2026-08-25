@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <h1 id="create-event">create event</h1>
+    <h1 id="formTitle">create event</h1>
     <form id="eventForm" enctype="multipart/form-data">
       <label for="name">title:</label>
       <input type="text" id="name" name="name" required />
@@ -25,11 +25,11 @@
         name="description"
         class="description"
         required
-      >
-      </textarea>
+      ></textarea>
       <label for="image">image:</label>
+      <img id="currentImage" class="event-image" src="" alt="" hidden />
       <input type="file" id="image" name="file" accept="image/*" />
-      <button type="submit">create</button>
+      <button type="submit" id="submitButton">create</button>
       <p id="formError" hidden class="form-error"></p>
     </form>
     <script type="module" src="../js/postEvent.js"></script>

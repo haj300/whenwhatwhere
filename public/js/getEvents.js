@@ -69,8 +69,13 @@ function renderEvents(events, me) {
     eventTitle.addEventListener("click", goToDetails);
     eventImage.addEventListener("click", goToDetails);
 
-    const canDelete = me && (me.role === "ADMIN" || event.createdById === me.userId);
-    if (canDelete) {
+    const canManage = me && (me.role === "ADMIN" || event.createdById === me.userId);
+    if (canManage) {
+      const editButton = createAndAppend("button", eventItem, { text: "Edit Event" });
+      editButton.addEventListener("click", () => {
+        window.location.href = `/pages/addEvent.html?id=${event.id}`;
+      });
+
       const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event" });
       deleteButton.addEventListener("click", async () => {
         try {

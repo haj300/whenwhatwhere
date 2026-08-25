@@ -34,6 +34,7 @@ export const fetchEvents = () => request("GET", "/events");
 export const fetchEvent = (id) => request("GET", `/event/${id}`);
 export const createEvent = (data) => request("POST", "/addEvent", data);
 export const removeEvent = (id) => request("DELETE", `/event/${id}`);
+export const updateEvent = (id, data) => request("PUT", `/event/${id}`, data);
 
 export async function uploadImage(formData) {
   const res = await fetch("/uploadImage", { method: "POST", body: formData });

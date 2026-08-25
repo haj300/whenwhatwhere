@@ -1,13 +1,85 @@
-import { createEvent, uploadImage } from "./api.js";
+import { createEvent, updateEvent, fetchEvent, getSession, uploadImage } from "./api.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-  new PostEvent(document.getElementById("eventForm"));
+  const eventId = new URLSearchParams(window.location.search).get("id");
+  new PostEvent(document.getElementById("eventForm"), eventId);
 });
 
 class PostEvent {
-  constructor(eventForm) {
+  constructor(eventForm, eventId) {
     this.eventForm = eventForm;
+    this.eventId = eventId;
+    this.existingImageUrl = null;
+    this.objectUrl = null;
     this.eventForm.addEventListener("submit", this.handleEventFormSubmit.bind(this));
+    this.eventForm.elements.image.addEventListener("change", this.previewSelectedImage.bind(this));
+    if (eventId) this.enterEditMode(eventId);
+  }
+
+  previewSelectedImage() {
+    const preview = document.getElementById("currentImage");
+    const file = this.eventForm.elements.image.files[0];
+
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
+    }
+
+    if (file) {
+      this.objectUrl = URL.createObjectURL(file);
+      preview.src = this.objectUrl;
+      preview.removeAttribute("hidden");
+    } else if (this.existingImageUrl) {
+      preview.src = this.existingImageUrl;
+      preview.removeAttribute("hidden");
+    } else {
+      preview.src = "";
+      preview.setAttribute("hidden", "");
+    }
+  }
+
+  async enterEditMode(eventId) {
+    let me = null;
+    try {
+      me = await getSession();
+    } catch {
+      me = null;
+    }
+    let existing;
+    try {
+      existing = await fetchEvent(eventId);
+    } catch (e) {
+      console.error(e);
+      this.blockForm("Could not load event.");
+      return;
+    }
+    const canEdit = me && (me.role === "ADMIN" || existing.createdById === me.userId);
+    if (!canEdit) {
+      this.blockForm("You don't have permission to edit this event.");
+      return;
+    }
+    this.prefillForm(existing);
+    document.getElementById("formTitle").textContent = "edit event";
+    document.getElementById("submitButton").textContent = "save";
+  }
+
+  blockForm(message) {
+    this.eventForm.setAttribute("hidden", "");
+    document.getElementById("formTitle").textContent = message;
+  }
+
+  prefillForm(existing) {
+    const { name, description, date, time, location, link } = this.eventForm.elements;
+    const eventDate = new Date(existing.date);
+    const pad = (n) => String(n).padStart(2, "0");
+    name.value = existing.name;
+    description.value = existing.description;
+    date.value = `${eventDate.getFullYear()}-${pad(eventDate.getMonth() + 1)}-${pad(eventDate.getDate())}`;
+    time.value = `${pad(eventDate.getHours())}:${pad(eventDate.getMinutes())}`;
+    location.value = existing.location;
+    link.value = existing.link || "";
+    this.existingImageUrl = existing.image || null;
+    this.previewSelectedImage();
   }
 
   showError(msg) {
@@ -45,20 +117,27 @@ class PostEvent {
       }
     }
 
+    const payload = {
+      name: name.value,
+      description: description.value,
+      date: dateValue.toISOString(),
+      location: location.value,
+      link: link.value,
+      image: imageUrl,
+    };
+
     try {
-      await createEvent({
-        name: name.value,
-        description: description.value,
-        date: dateValue.toISOString(),
-        location: location.value,
-        link: link.value,
-        image: imageUrl,
-      });
-      this.eventForm.reset();
-      window.location.href = "/";
+      if (this.eventId) {
+        await updateEvent(this.eventId, payload);
+        window.location.href = `/pages/event.html?id=${this.eventId}`;
+      } else {
+        await createEvent(payload);
+        this.eventForm.reset();
+        window.location.href = "/";
+      }
     } catch (e) {
       console.error(e);
-      this.showError(e.message || "Could not create event. Please try again.");
+      this.showError(e.message || "Could not save event. Please try again.");
     }
   }
 }

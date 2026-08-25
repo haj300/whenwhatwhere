@@ -29,6 +29,20 @@ export async function createEvent(
   });
 }
 
+export async function updateEvent(id: number, data: NewEvent): Promise<event> {
+  return prisma.event.update({
+    where: { id },
+    data: {
+      name: data.name,
+      description: data.description,
+      date: data.date,
+      location: data.location,
+      link: data.link ?? null,
+      ...(data.image !== undefined ? { image: data.image } : {}),
+    },
+  });
+}
+
 export async function deleteEvent(id: number): Promise<void> {
   await prisma.event.delete({ where: { id } });
 }

@@ -70,6 +70,10 @@ button {
   margin-right: auto;
 }
 
+.event-image[hidden] {
+  display: none;
+}
+
 #eventList .event-image {
   margin-bottom: 3%;
   cursor: pointer;
