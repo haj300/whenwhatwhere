@@ -35,14 +35,19 @@ function setupTabs(upcoming, past, me) {
 
   const showTab = (tab) => {
     activeTab = tab;
-    tabUpcoming.classList.toggle("active", tab === "upcoming");
-    tabPast.classList.toggle("active", tab === "past");
+    setTabState(tabUpcoming, tab === "upcoming", "Upcoming");
+    setTabState(tabPast, tab === "past", "Past");
     renderEvents(tab === "upcoming" ? upcoming : past, me);
   };
 
   tabUpcoming.onclick = () => showTab("upcoming");
   tabPast.onclick = () => showTab("past");
   showTab(activeTab);
+}
+
+function setTabState(button, isActive, label) {
+  button.setAttribute("aria-pressed", String(isActive));
+  button.textContent = isActive ? `[ ${label} ]` : label;
 }
 
 function renderEvents(events, me) {
@@ -66,7 +71,7 @@ function renderEvents(events, me) {
 
     const canDelete = me && (me.role === "ADMIN" || event.createdById === me.userId);
     if (canDelete) {
-      const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event", class: "button" });
+      const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event" });
       deleteButton.addEventListener("click", async () => {
         try {
           await removeEvent(event.id);
