@@ -147,7 +147,7 @@ class PostEvent {
       date: dateValue.toISOString(),
       location: location.value,
       link: link.value,
-      image: imageUrl,
+      ...(imageUrl ? { image: imageUrl } : {}),
     };
 
     try {
