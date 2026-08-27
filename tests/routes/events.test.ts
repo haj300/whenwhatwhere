@@ -282,6 +282,85 @@ describe("PUT /event/:id", () => {
     const body = await res.json();
     expect(body.image).toBe("/uploads/original.png");
   });
+
+  test("adds a link to an event that didn't have one", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        link: "https://example.com/tickets",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.link).toBe("https://example.com/tickets");
+  });
+
+  test("clears an existing link when submitted empty", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", link: "https://example.com/tickets", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        link: "",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.link).toBeNull();
+  });
+
+  test("ignores createdById in the body and keeps the original owner", async () => {
+    const owner = await makeUser();
+    const other = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        createdById: other.id,
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.createdById).toBe(owner.id);
+  });
+
+  test("returns 404 for non-numeric id", async () => {
+    const user = await makeUser();
+    const res = await fetch(`${baseUrl}/event/abc`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(user) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(404);
+  });
 });
 
 describe("GET /event/:id", () => {

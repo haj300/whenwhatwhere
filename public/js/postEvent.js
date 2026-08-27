@@ -36,9 +36,7 @@ class PostEvent {
     try {
       await getSession();
     } catch {
-      this.blockForm(
-        "Sorryyyyyy you must be logged in to create an event.. ask the fast shark for an invite!!",
-      );
+      window.location.href = "/pages/inviteOnly.html";
     }
   }
 
@@ -128,10 +126,7 @@ class PostEvent {
     const { name, description, image, date, time, location, link } =
       this.eventForm.elements;
 
-    const dateValue = new Date(date.value);
-    const timeValue = time.value.split(":");
-    dateValue.setHours(timeValue[0]);
-    dateValue.setMinutes(timeValue[1]);
+    const dateValue = new Date(`${date.value}T${time.value}`);
 
     let imageUrl = "";
     if (image.files[0]) {
