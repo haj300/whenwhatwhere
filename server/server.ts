@@ -28,7 +28,7 @@ app.use(async (ctx, next) => {
   ctx.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
   ctx.set(
     "Content-Security-Policy",
-    "default-src 'self'; img-src 'self'; frame-ancestors 'none'"
+    "default-src 'self'; img-src 'self' blob:; frame-ancestors 'none'"
   );
   if (ctx.secure) {
     ctx.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");

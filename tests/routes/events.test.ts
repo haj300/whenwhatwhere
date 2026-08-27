@@ -151,6 +151,218 @@ describe("DELETE /event/:id", () => {
   });
 });
 
+describe("PUT /event/:id", () => {
+  test("rejects unauthenticated requests with 401", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "Y",
+      }),
+    });
+    expect(res.status).toBe(401);
+  });
+
+  test("owner updates their event and returns 200 with the updated fields", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated name",
+        description: "Updated desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "New venue",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.name).toBe("Updated name");
+    expect(body.description).toBe("Updated desc");
+    expect(body.location).toBe("New venue");
+  });
+
+  test("contributor cannot update another user's event (403)", async () => {
+    const owner = await makeUser();
+    const other = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(other) },
+      body: JSON.stringify({
+        name: "Hijacked",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(403);
+    const still = await prisma.event.findUnique({ where: { id: created.id } });
+    expect(still?.name).toBe("Original");
+  });
+
+  test("admin can update any event (200)", async () => {
+    const owner = await makeUser();
+    const admin = await makeUser("ADMIN");
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(admin) },
+      body: JSON.stringify({
+        name: "Admin edit",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(200);
+  });
+
+  test("returns 404 for non-existent event when authenticated", async () => {
+    const user = await makeUser();
+    const res = await fetch(`${baseUrl}/event/99999`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(user) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(404);
+  });
+
+  test("returns 400 for missing required fields", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({ name: "", description: "ok", date: "bad", location: "" }),
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.errors).toBeArray();
+    expect(body.errors.length).toBeGreaterThan(0);
+  });
+
+  test("omitting image from the payload leaves the stored image untouched", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", image: "/uploads/original.png", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.image).toBe("/uploads/original.png");
+  });
+
+  test("adds a link to an event that didn't have one", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        link: "https://example.com/tickets",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.link).toBe("https://example.com/tickets");
+  });
+
+  test("clears an existing link when submitted empty", async () => {
+    const owner = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", link: "https://example.com/tickets", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        link: "",
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.link).toBeNull();
+  });
+
+  test("ignores createdById in the body and keeps the original owner", async () => {
+    const owner = await makeUser();
+    const other = await makeUser();
+    const created = await prisma.event.create({
+      data: { name: "Original", description: "desc", date: new Date("2026-11-01T20:00:00Z"), location: "X", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(owner) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+        createdById: other.id,
+      }),
+    });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.createdById).toBe(owner.id);
+  });
+
+  test("returns 404 for non-numeric id", async () => {
+    const user = await makeUser();
+    const res = await fetch(`${baseUrl}/event/abc`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Cookie: authCookie(user) },
+      body: JSON.stringify({
+        name: "Updated",
+        description: "desc",
+        date: "2026-11-02T20:00:00.000Z",
+        location: "X",
+      }),
+    });
+    expect(res.status).toBe(404);
+  });
+});
+
 describe("GET /event/:id", () => {
   test("returns event by id (public)", async () => {
     const owner = await makeUser();

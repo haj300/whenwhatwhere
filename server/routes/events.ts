@@ -3,11 +3,12 @@ import {
   listEvents,
   getEventById,
   createEvent,
+  updateEvent,
   deleteEvent,
 } from "../db/events";
 import { validateNewEvent } from "../domain/events";
 import { requireAuth } from "../middleware/auth";
-import { canDeleteEvent } from "../domain/permissions";
+import { canDeleteEvent, canEditEvent } from "../domain/permissions";
 
 export const eventsRouter = new Router();
 
@@ -59,4 +60,28 @@ eventsRouter.delete("/event/:id", requireAuth, async (ctx) => {
 
   await deleteEvent(id);
   ctx.status = 204;
+});
+
+eventsRouter.put("/event/:id", requireAuth, async (ctx) => {
+  const id = Number(ctx.params.id);
+  if (isNaN(id)) {
+    ctx.status = 404;
+    return;
+  }
+  const existing = await getEventById(id);
+  if (!existing) {
+    ctx.status = 404;
+    return;
+  }
+  if (!canEditEvent(ctx.state.user, existing)) {
+    ctx.status = 403;
+    return;
+  }
+  const result = validateNewEvent(ctx.request.body);
+  if (!result.ok) {
+    ctx.status = 400;
+    ctx.body = { errors: result.errors };
+    return;
+  }
+  ctx.body = await updateEvent(id, result.event);
 });

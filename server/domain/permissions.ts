@@ -6,3 +6,10 @@ export function canDeleteEvent(
 ): boolean {
   return user.role === "ADMIN" || event.createdById === user.userId;
 }
+
+export function canEditEvent(
+  user: AuthUser,
+  event: { createdById: number },
+): boolean {
+  return user.role === "ADMIN" || event.createdById === user.userId;
+}
