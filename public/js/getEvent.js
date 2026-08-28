@@ -33,10 +33,10 @@ async function getEvent(eventId) {
     );
     document.getElementById("name").textContent = event.name;
     document.getElementById("author").textContent =
-      `posted by ${event.createdBy?.username ?? event.createdBy?.email ?? "unknown"}`;
+      `posted by: ${event.createdBy?.username ?? event.createdBy?.email ?? "unknown"}`;
     document.getElementById("description").textContent = event.description;
-    document.getElementById("date").textContent = formatDate(event.date);
-    document.getElementById("location").textContent = event.location;
+    document.getElementById("date").textContent = `date: ${formatDate(event.date)}`;
+    document.getElementById("location").textContent = `location: ${event.location}`;
     document.getElementById("image").src = event.image || "";
     if (event.link) {
       const linkEl = document.getElementById("link");

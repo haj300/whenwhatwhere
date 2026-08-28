@@ -53,6 +53,17 @@ button {
   color: #eceaea;
   margin: 1%;
   align-self: flex-start;
+  font-family: "Courier New", monospace;
+}
+
+.event-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-self: flex-end;
+}
+
+.event-link {
+  margin: 0.75rem 0;
 }
 
 #eventList :is(h4) {
@@ -102,4 +113,28 @@ button {
 
 .form-error {
   color: red;
+}
+
+#event {
+  max-width: 350px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+#event h1 {
+  text-align: center;
+}
+
+.event-meta {
+  font-family: "Courier New", monospace;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 0.5rem 0;
+  margin: 0.5rem 0;
+  color: #eceaea;
+  font-size: 0.9em;
+}
+
+.event-meta p {
+  margin: 0.2rem 0;
 }
