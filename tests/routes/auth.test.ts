@@ -59,16 +59,19 @@ describe("POST /auth/setup", () => {
     const res = await postJson("/auth/setup", {
       inviteToken: token,
       password: "a-decent-passphrase",
+      username: "newuser",
     });
     expect(res.status).toBe(201);
-    
+
     const responseBody = await res.json();
     expect(responseBody.email).toBe("new@test.local");
     expect(responseBody.role).toBe("ADMIN");
+    expect(responseBody.username).toBe("newuser");
 
     const user = await prisma.user.findUnique({ where: { email: "new@test.local" } });
     expect(user).not.toBeNull();
     expect(user?.role).toBe("ADMIN");
+    expect(user?.username).toBe("newuser");
 
     expect(await prisma.invite.findFirst({ where: { email: "new@test.local" } })).toBeNull();
 
@@ -96,6 +99,7 @@ describe("POST /auth/setup", () => {
     const res = await postJson("/auth/setup", {
       inviteToken: token,
       password: "a-decent-passphrase",
+      username: "olduser",
     });
     expect(res.status).toBe(400);
     expect(await prisma.user.findUnique({ where: { email: "old@test.local" } })).toBeNull();
@@ -105,6 +109,7 @@ describe("POST /auth/setup", () => {
     const res = await postJson("/auth/setup", {
       inviteToken: generateToken(), // never stored
       password: "a-decent-passphrase",
+      username: "someuser",
     });
     expect(res.status).toBe(400);
   });
@@ -115,8 +120,42 @@ describe("POST /auth/setup", () => {
     const res = await postJson("/auth/setup", {
       inviteToken: token,
       password: "a-decent-passphrase",
+      username: "dupeemailuser",
     });
     expect(res.status).toBe(400);
+  });
+
+  test("rejects a username shorter than 3 characters with 400", async () => {
+    const token = await makeInvite("new@test.local");
+    const res = await postJson("/auth/setup", {
+      inviteToken: token,
+      password: "a-decent-passphrase",
+      username: "ab",
+    });
+    expect(res.status).toBe(400);
+    expect(await prisma.user.findUnique({ where: { email: "new@test.local" } })).toBeNull();
+  });
+
+  test("rejects a username with disallowed characters with 400", async () => {
+    const token = await makeInvite("new@test.local");
+    const res = await postJson("/auth/setup", {
+      inviteToken: token,
+      password: "a-decent-passphrase",
+      username: "katja@home",
+    });
+    expect(res.status).toBe(400);
+  });
+
+  test("rejects a username that's already taken with 409", async () => {
+    await makeUser("CONTRIBUTOR", "katja");
+    const token = await makeInvite("new@test.local");
+    const res = await postJson("/auth/setup", {
+      inviteToken: token,
+      password: "a-decent-passphrase",
+      username: "katja",
+    });
+    expect(res.status).toBe(409);
+    expect(await prisma.user.findUnique({ where: { email: "new@test.local" } })).toBeNull();
   });
 });
 
@@ -172,6 +211,15 @@ describe("GET /auth/me", () => {
     const body = await res.json();
     expect(body.userId).toBe(user.id);
     expect(body.role).toBe("ADMIN");
+    expect(body.username).toBeNull();
+  });
+
+  test("includes the username when the user has set one", async () => {
+    const user = await makeUser("CONTRIBUTOR", "katja");
+    const res = await fetch(`${baseUrl}/auth/me`, { headers: { Cookie: authCookie(user) } });
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.username).toBe("katja");
   });
 });
 

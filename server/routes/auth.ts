@@ -1,4 +1,5 @@
 import Router from "@koa/router";
+import { Prisma } from "@prisma/client";
 import { getUserByEmail, getUserById, createUser } from "../db/users";
 import { getInviteByTokenHash, deleteInvite } from "../db/invites";
 import { hashToken } from "../auth/tokens";
@@ -6,6 +7,7 @@ import { signToken, verifyToken } from "../auth/jwt";
 import { loginLimiter } from "../auth/rateLimit";
 import { requireAuth } from "../middleware/auth";
 import { validatePassword } from "../domain/password";
+import { validateUsername } from "../domain/username";
 
 const cookieOpts = {
   httpOnly: true,
@@ -20,15 +22,24 @@ authRouter.post("/auth/setup", async (ctx) => {
   const body = ctx.request.body as {
     password?: unknown;
     inviteToken?: unknown;
+    username?: unknown;
   };
   const password = typeof body.password === "string" ? body.password : "";
   const inviteToken =
     typeof body.inviteToken === "string" ? body.inviteToken : "";
+  const username = typeof body.username === "string" ? body.username.trim() : "";
 
   const passwordError = validatePassword(password);
   if (passwordError) {
     ctx.status = 400;
     ctx.body = { error: passwordError };
+    return;
+  }
+
+  const usernameError = validateUsername(username);
+  if (usernameError) {
+    ctx.status = 400;
+    ctx.body = { error: usernameError };
     return;
   }
 
@@ -47,18 +58,32 @@ authRouter.post("/auth/setup", async (ctx) => {
 
   const passwordHash = await Bun.password.hash(password);
 
-  const user = await createUser({
-    email: invite.email,
-    passwordHash,
-    role: invite.role,
-  });
+  let user;
+  try {
+    user = await createUser({
+      email: invite.email,
+      passwordHash,
+      role: invite.role,
+      username,
+    });
+  } catch (e) {
+    // The unique constraint on `username` is the actual gate here — not a
+    // separate findUnique-then-create check, which would leave a race
+    // window between two concurrent setups picking the same name.
+    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+      ctx.status = 409;
+      ctx.body = { error: "Username already taken" };
+      return;
+    }
+    throw e;
+  }
 
   await deleteInvite(invite.id);
 
   const token = signToken({ userId: user.id, role: user.role });
   ctx.cookies.set("token", token, cookieOpts);
   ctx.status = 201;
-  ctx.body = { email: user.email, role: user.role };
+  ctx.body = { email: user.email, role: user.role, username: user.username };
 });
 
 authRouter.post("/auth/login", async (ctx) => {
@@ -99,7 +124,12 @@ authRouter.post("/auth/login", async (ctx) => {
 });
 
 authRouter.get("/auth/me", requireAuth, async (ctx) => {
-  ctx.body = { userId: ctx.state.user.userId, role: ctx.state.user.role };
+  const user = await getUserById(ctx.state.user.userId);
+  ctx.body = {
+    userId: ctx.state.user.userId,
+    role: ctx.state.user.role,
+    username: user?.username ?? null,
+  };
 });
 
 authRouter.post("/auth/logout", async (ctx) => {
