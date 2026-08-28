@@ -9,6 +9,15 @@
   <body>
     <h1>set up your account</h1>
     <form id="setupForm">
+      <label for="username">choose a username:</label>
+      <input
+        type="text"
+        id="username"
+        name="username"
+        pattern="[A-Za-z0-9_. -]{3,20}"
+        title="3-20 characters: letters, numbers, spaces, . _ or -"
+        required
+      />
       <label for="password">choose a password:</label>
       <input type="password" id="password" name="password" required />
       <button type="submit">create account</button>

@@ -16,7 +16,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   loginLink?.setAttribute("hidden", "");
   logoutLink?.removeAttribute("hidden");
-  if (loginStatus) loginStatus.textContent = `Logged in as: user #${session.userId}`;
+  if (loginStatus) {
+    loginStatus.textContent = session.username
+      ? `Logged in as: ${session.username}`
+      : `Logged in as: user #${session.userId}`;
+  }
 
   logoutLink?.addEventListener("click", async () => {
     try {

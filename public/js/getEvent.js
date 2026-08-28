@@ -2,7 +2,7 @@ import { fetchEvent, getSession } from "./api.js";
 import { formatDate } from "./format.js";
 
 class EventDetail {
-  constructor(name, description, image, date, location, link, createdById) {
+  constructor(name, description, image, date, location, link, createdById, createdBy) {
     this.name = name;
     this.description = description;
     this.image = image;
@@ -10,6 +10,7 @@ class EventDetail {
     this.location = location;
     this.link = link;
     this.createdById = createdById;
+    this.createdBy = createdBy;
   }
 }
 
@@ -28,8 +29,11 @@ async function getEvent(eventId) {
     const event = new EventDetail(
       eventData.name, eventData.description, eventData.image,
       eventData.date, eventData.location, eventData.link, eventData.createdById,
+      eventData.createdBy,
     );
     document.getElementById("name").textContent = event.name;
+    document.getElementById("author").textContent =
+      `posted by ${event.createdBy?.username ?? event.createdBy?.email ?? "unknown"}`;
     document.getElementById("description").textContent = event.description;
     document.getElementById("date").textContent = formatDate(event.date);
     document.getElementById("location").textContent = event.location;

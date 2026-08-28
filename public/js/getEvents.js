@@ -57,6 +57,10 @@ function renderEvents(events, me) {
     const eventItem = createAndAppend("div", eventList, { class: "event-item" });
     const eventTitle = createAndAppend("h2", eventItem, { text: event.name, class: "event-title" });
     const eventImage = createAndAppend("img", eventItem, { src: event.image, class: "event-image" });
+    createAndAppend("p", eventItem, {
+      text: `posted by ${event.createdBy?.username ?? event.createdBy?.email ?? "unknown"}`,
+      class: "event-author",
+    });
     createAndAppend("p", eventItem, { text: formatDate(event.date) });
     createAndAppend("p", eventItem, { text: event.location });
     if (event.link) {
