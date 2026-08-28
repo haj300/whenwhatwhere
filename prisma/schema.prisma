@@ -13,11 +13,12 @@ enum Role {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique @db.VarChar(255)
+  id           Int      @id @default(autoincrement())
+  email        String   @unique @db.VarChar(255)
   passwordHash String   @db.VarChar(255)
-  role     Role     @default(CONTRIBUTOR)
-  events   event[]
+  username     String?  @unique @db.VarChar(20)
+  role         Role     @default(CONTRIBUTOR)
+  events       event[]
 }
 
 model Invite {
