@@ -89,7 +89,11 @@ async function sniffImageMime(filepath: string): Promise<string | null> {
       buf[7] === 0x0a
     )
       return "image/png";
-    if (bytesRead >= 6 && buf.toString("ascii", 0, 3) === "GIF")
+    if (
+      bytesRead >= 6 &&
+      (buf.toString("ascii", 0, 6) === "GIF87a" ||
+        buf.toString("ascii", 0, 6) === "GIF89a")
+    )
       return "image/gif";
     if (
       bytesRead >= 12 &&

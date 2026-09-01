@@ -5,19 +5,19 @@ import type { NewEvent } from "../domain/types";
 export const prisma = new PrismaClient();
 
 export type EventWithCreator = Prisma.eventGetPayload<{
-  include: { createdBy: { select: { username: true; email: true } } };
+  include: { createdBy: { select: { username: true } } };
 }>;
 
 export async function listEvents(): Promise<EventWithCreator[]> {
   return prisma.event.findMany({
-    include: { createdBy: { select: { username: true, email: true } } },
+    include: { createdBy: { select: { username: true } } },
   });
 }
 
 export async function getEventById(id: number): Promise<EventWithCreator | null> {
   return prisma.event.findUnique({
     where: { id },
-    include: { createdBy: { select: { username: true, email: true } } },
+    include: { createdBy: { select: { username: true } } },
   });
 }
 

@@ -70,7 +70,11 @@ authRouter.post("/auth/setup", async (ctx) => {
     // The unique constraint on `username` is the actual gate here — not a
     // separate findUnique-then-create check, which would leave a race
     // window between two concurrent setups picking the same name.
-    if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+    if (
+      e instanceof Prisma.PrismaClientKnownRequestError &&
+      e.code === "P2002" &&
+      (e.meta?.target as string[] | undefined)?.includes("username")
+    ) {
       ctx.status = 409;
       ctx.body = { error: "Username already taken" };
       return;

@@ -425,7 +425,7 @@ describe("GET /events", () => {
     const res = await fetch(`${baseUrl}/events`);
     const body = await res.json();
     expect(body[0].createdBy.username).toBe("katja");
-    expect(body[0].createdBy.email).toBe(owner.email);
+    expect(body[0].createdBy.email).toBeUndefined();
   });
 
   test("falls back to a null username when the creator hasn't set one", async () => {
@@ -436,6 +436,6 @@ describe("GET /events", () => {
     const res = await fetch(`${baseUrl}/events`);
     const body = await res.json();
     expect(body[0].createdBy.username).toBeNull();
-    expect(body[0].createdBy.email).toBe(owner.email);
+    expect(body[0].createdBy.email).toBeUndefined();
   });
 });
