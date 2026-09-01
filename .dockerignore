@@ -1,0 +1,21 @@
+# Keep secrets and sensitive files OUT of the build context so `COPY . .`
+# cannot bake them into an immutable image layer. Docker/Podman only read
+# this file (NOT .gitignore) when building the context.
+
+# Environment files with credentials (DATABASE_URL, JWT_SECRET, ...)
+.env
+.env.*
+
+# Version control history (may contain secrets in past commits)
+.git
+.gitignore
+
+# Private keys / certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Local dependencies / build artifacts (not needed; reinstalled in image)
+node_modules

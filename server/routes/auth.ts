@@ -4,7 +4,7 @@ import { getUserByEmail, getUserById, createUser } from "../db/users";
 import { getInviteByTokenHash, deleteInvite } from "../db/invites";
 import { hashToken } from "../auth/tokens";
 import { signToken, verifyToken } from "../auth/jwt";
-import { loginLimiter } from "../auth/rateLimit";
+import { loginLimiter, loginIpLimiter } from "../auth/rateLimit";
 import { requireAuth } from "../middleware/auth";
 import { validatePassword } from "../domain/password";
 import { validateUsername } from "../domain/username";
@@ -91,9 +91,16 @@ authRouter.post("/auth/login", async (ctx) => {
   const email = typeof body.email === "string" ? body.email : "";
   const password = typeof body.password === "string" ? body.password : "";
 
-  // Rate-limit by email, not IP: stays meaningful behind shared/proxied
-  // IPs and stops repeated guesses against one specific account.
-  if (!loginLimiter.check(email)) {
+  // Two rate-limit dimensions, both required. The per-email limiter stops
+  // repeated guesses against one specific account; the per-IP limiter stops
+  // cross-account credential stuffing where an attacker cycles email
+  // addresses (each getting a fresh per-email counter) from one source IP.
+  // consume() atomically counts this attempt *before* any await, so a burst
+  // of concurrent requests can't all slip past the gate in the same event-loop
+  // tick before the counter is written (TOCTOU race, CWE-362). A successful
+  // login resets both counters below.
+  const ip = ctx.ip;
+  if (!loginIpLimiter.consume(ip) || !loginLimiter.consume(email)) {
     ctx.status = 429;
     ctx.body = { error: "Too many login attempts. Try again later." };
     return;
@@ -111,13 +118,15 @@ authRouter.post("/auth/login", async (ctx) => {
   );
 
   if (!user || !passwordOk) {
-    loginLimiter.recordFailure(email);
+    // The failed attempt was already counted by consume() above.
     ctx.status = 401;
     ctx.body = { error: "Invalid email or password" };
     return;
   }
 
+  // Successful login: clear the pre-counted attempt on both dimensions.
   loginLimiter.reset(email);
+  loginIpLimiter.reset(ip);
   const token = signToken({ userId: user.id, role: user.role });
   ctx.cookies.set("token", token, cookieOpts);
   ctx.status = 204;

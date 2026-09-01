@@ -7,6 +7,7 @@ import serve from "koa-static";
 import dotenv from "dotenv";
 import { eventsRouter } from "./routes/events";
 import { authRouter } from "./routes/auth";
+import { requireAuth } from "./middleware/auth";
 
 dotenv.config();
 
@@ -56,12 +57,68 @@ app.use(serve(path.join("public")));
 // (see app.container) so images survive redeploys.
 const UPLOAD_DIR = path.join("public", "uploads");
 
+// Files under public/uploads/ are served from the app's own origin, so the
+// content type is security-relevant: an uploaded .html/.js would satisfy the
+// same-origin CSP and execute as stored XSS. Restrict uploads to real image
+// formats by inspecting the leading bytes (magic number) — the authoritative
+// check, since the client-supplied MIME type and filename are attacker-
+// controlled. Returns the detected MIME type, or null if not an allowed image.
+const ALLOWED_IMAGE_MIME = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
+
+async function sniffImageMime(filepath: string): Promise<string | null> {
+  const fd = await fs.promises.open(filepath, "r");
+  try {
+    const buf = Buffer.alloc(12);
+    const { bytesRead } = await fd.read(buf, 0, 12, 0);
+    if (bytesRead >= 3 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff)
+      return "image/jpeg";
+    if (
+      bytesRead >= 8 &&
+      buf[0] === 0x89 &&
+      buf[1] === 0x50 &&
+      buf[2] === 0x4e &&
+      buf[3] === 0x47 &&
+      buf[4] === 0x0d &&
+      buf[5] === 0x0a &&
+      buf[6] === 0x1a &&
+      buf[7] === 0x0a
+    )
+      return "image/png";
+    if (bytesRead >= 6 && buf.toString("ascii", 0, 3) === "GIF")
+      return "image/gif";
+    if (
+      bytesRead >= 12 &&
+      buf.toString("ascii", 0, 4) === "RIFF" &&
+      buf.toString("ascii", 8, 12) === "WEBP"
+    )
+      return "image/webp";
+    return null;
+  } finally {
+    await fd.close();
+  }
+}
+
 const uploadImageHandler = async (ctx: any) => {
   const files = ctx.request.files?.file;
   const file = Array.isArray(files) ? files[0] : files;
   if (!file) {
     ctx.status = 400;
     ctx.body = { error: "No file provided" };
+    return;
+  }
+
+  // Confirm the bytes really are an allowed image format before writing into
+  // the publicly served uploads directory. This is what prevents an attacker
+  // from planting an executable .html/.js payload at a same-origin URL.
+  const detectedMime = await sniffImageMime(file.filepath);
+  if (!detectedMime || !ALLOWED_IMAGE_MIME.has(detectedMime)) {
+    ctx.status = 400;
+    ctx.body = { error: "Unsupported file type" };
     return;
   }
 
@@ -75,14 +132,16 @@ const uploadImageHandler = async (ctx: any) => {
 };
 
 // ── routes ──────────────────────────────────────────────────────
-app.use(koaBody({ multipart: true }));
+app.use(
+  koaBody({ multipart: true, formidable: { maxFileSize: 5 * 1024 * 1024 } })
+);
 app.use(authRouter.routes());
 app.use(authRouter.allowedMethods());
 app.use(eventsRouter.routes());
 app.use(eventsRouter.allowedMethods());
 
 const uploadRouter = new Router();
-uploadRouter.post("/uploadImage", uploadImageHandler);
+uploadRouter.post("/uploadImage", requireAuth, uploadImageHandler);
 app.use(uploadRouter.routes());
 
 // ── listen (skipped when imported by tests) ─────────────────────
