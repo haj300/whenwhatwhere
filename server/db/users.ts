@@ -13,6 +13,7 @@ export async function createUser(data: {
   email: string;
   passwordHash: string;
   role: Role;
+  username?: string;
 }): Promise<User> {
   return prisma.user.create({ data });
 }

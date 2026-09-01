@@ -57,11 +57,16 @@ function renderEvents(events, me) {
     const eventItem = createAndAppend("div", eventList, { class: "event-item" });
     const eventTitle = createAndAppend("h2", eventItem, { text: event.name, class: "event-title" });
     const eventImage = createAndAppend("img", eventItem, { src: event.image, class: "event-image" });
-    createAndAppend("p", eventItem, { text: formatDate(event.date) });
-    createAndAppend("p", eventItem, { text: event.location });
+    createAndAppend("p", eventItem, {
+      text: `posted by: ${event.createdBy?.username ?? "unknown"}`,
+      class: "event-author",
+    });
+    createAndAppend("p", eventItem, { text: `date: ${formatDate(event.date)}` });
+    createAndAppend("p", eventItem, { text: `location: ${event.location}` });
     if (event.link) {
-      createAndAppend("h4", eventItem, { text: "Link: " });
-      createAndAppend("a", eventItem, { text: event.link, href: event.link });
+      const linkBlock = createAndAppend("div", eventItem, { class: "event-link" });
+      createAndAppend("h4", linkBlock, { text: "Link: " });
+      createAndAppend("a", linkBlock, { text: event.link, href: event.link });
     }
     const goToDetails = () => {
       window.location.href = `/pages/event.html?id=${event.id}`;
@@ -71,12 +76,14 @@ function renderEvents(events, me) {
 
     const canManage = me && (me.role === "ADMIN" || event.createdById === me.userId);
     if (canManage) {
-      const editButton = createAndAppend("button", eventItem, { text: "Edit Event" });
+      const actions = createAndAppend("div", eventItem, { class: "event-actions" });
+
+      const editButton = createAndAppend("button", actions, { text: "Edit" });
       editButton.addEventListener("click", () => {
         window.location.href = `/pages/addEvent.html?id=${event.id}`;
       });
 
-      const deleteButton = createAndAppend("button", eventItem, { text: "Delete Event" });
+      const deleteButton = createAndAppend("button", actions, { text: "Delete" });
       deleteButton.addEventListener("click", async () => {
         try {
           await removeEvent(event.id);

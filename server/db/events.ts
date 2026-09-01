@@ -1,15 +1,24 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import type { event } from "@prisma/client";
 import type { NewEvent } from "../domain/types";
 
 export const prisma = new PrismaClient();
 
-export async function listEvents(): Promise<event[]> {
-  return prisma.event.findMany();
+export type EventWithCreator = Prisma.eventGetPayload<{
+  include: { createdBy: { select: { username: true } } };
+}>;
+
+export async function listEvents(): Promise<EventWithCreator[]> {
+  return prisma.event.findMany({
+    include: { createdBy: { select: { username: true } } },
+  });
 }
 
-export async function getEventById(id: number): Promise<event | null> {
-  return prisma.event.findUnique({ where: { id } });
+export async function getEventById(id: number): Promise<EventWithCreator | null> {
+  return prisma.event.findUnique({
+    where: { id },
+    include: { createdBy: { select: { username: true } } },
+  });
 }
 
 export async function createEvent(

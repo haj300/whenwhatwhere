@@ -385,6 +385,16 @@ describe("GET /event/:id", () => {
     const res = await fetch(`${baseUrl}/event/abc`);
     expect(res.status).toBe(404);
   });
+
+  test("includes the creator's username (public)", async () => {
+    const owner = await makeUser("CONTRIBUTOR", "katja");
+    const created = await prisma.event.create({
+      data: { name: "Detail gig", description: "desc", date: new Date("2026-09-01T19:00:00Z"), location: "Nalen", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/event/${created.id}`);
+    const body = await res.json();
+    expect(body.createdBy.username).toBe("katja");
+  });
 });
 
 describe("GET /events", () => {
@@ -405,5 +415,27 @@ describe("GET /events", () => {
     const body = await res.json();
     expect(body).toHaveLength(1);
     expect(body[0].name).toBe("Test gig");
+  });
+
+  test("includes the creator's username in each event (public)", async () => {
+    const owner = await makeUser("CONTRIBUTOR", "katja");
+    await prisma.event.create({
+      data: { name: "Test gig", description: "A test", date: new Date("2026-08-01T20:00:00Z"), location: "Debaser", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/events`);
+    const body = await res.json();
+    expect(body[0].createdBy.username).toBe("katja");
+    expect(body[0].createdBy.email).toBeUndefined();
+  });
+
+  test("falls back to a null username when the creator hasn't set one", async () => {
+    const owner = await makeUser();
+    await prisma.event.create({
+      data: { name: "Test gig", description: "A test", date: new Date("2026-08-01T20:00:00Z"), location: "Debaser", createdById: owner.id },
+    });
+    const res = await fetch(`${baseUrl}/events`);
+    const body = await res.json();
+    expect(body[0].createdBy.username).toBeNull();
+    expect(body[0].createdBy.email).toBeUndefined();
   });
 });
