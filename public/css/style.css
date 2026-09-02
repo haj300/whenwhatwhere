@@ -22,6 +22,9 @@ button {
   color: #666;
   font-size: 2em;
   font-family: "Helvetica Neue", sans-serif;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 0.25rem;
 }
 
 #app {
@@ -123,6 +126,19 @@ button {
 
 #event h1 {
   text-align: center;
+}
+
+#headerImage {
+  position: absolute;
+  top: 0;
+  right: -3.5rem;
+  width: 4.5rem;
+  z-index: -1;
+}
+
+#footerImage {
+  width: 5rem;
+  height: auto;
 }
 
 .event-meta {
