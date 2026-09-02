@@ -138,3 +138,53 @@ button {
 .event-meta p {
   margin: 0.2rem 0;
 }
+
+/* username colors — keep in sync with COLOR_CLASSES in public/js/usernameColor.js */
+.uc-aqua {
+  color: aqua;
+}
+.uc-black {
+  color: black;
+}
+.uc-blue {
+  color: blue;
+}
+.uc-fuchsia {
+  color: fuchsia;
+}
+.uc-gray {
+  color: gray;
+}
+.uc-green {
+  color: green;
+}
+.uc-lime {
+  color: lime;
+}
+.uc-maroon {
+  color: maroon;
+}
+.uc-navy {
+  color: navy;
+}
+.uc-olive {
+  color: olive;
+}
+.uc-purple {
+  color: purple;
+}
+.uc-red {
+  color: red;
+}
+.uc-silver {
+  color: silver;
+}
+.uc-teal {
+  color: teal;
+}
+.uc-white {
+  color: white;
+}
+.uc-yellow {
+  color: yellow;
+}
