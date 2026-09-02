@@ -1,4 +1,5 @@
 import { getSession, logout } from "./api.js";
+import { usernameColorClass } from "./usernameColor.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const loginLink = document.getElementById("loginLink");
@@ -17,9 +18,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   loginLink?.setAttribute("hidden", "");
   logoutLink?.removeAttribute("hidden");
   if (loginStatus) {
-    loginStatus.textContent = session.username
-      ? `Logged in as: ${session.username}`
-      : `Logged in as: user #${session.userId}`;
+    loginStatus.textContent = "";
+    if (session.username) {
+      loginStatus.appendChild(document.createTextNode("Logged in as: "));
+      const usernameEl = document.createElement("span");
+      usernameEl.textContent = session.username;
+      usernameEl.classList.add(usernameColorClass(session.username));
+      loginStatus.appendChild(usernameEl);
+    } else {
+      loginStatus.textContent = `Logged in as: user #${session.userId}`;
+    }
   }
 
   logoutLink?.addEventListener("click", async () => {
