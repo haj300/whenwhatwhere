@@ -1,5 +1,6 @@
 import { fetchEvent, getSession } from "./api.js";
 import { formatDate } from "./format.js";
+import { usernameColorClass } from "./usernameColor.js";
 
 class EventDetail {
   constructor(name, description, image, date, location, link, createdById, createdBy) {
@@ -32,8 +33,14 @@ async function getEvent(eventId) {
       eventData.createdBy,
     );
     document.getElementById("name").textContent = event.name;
-    document.getElementById("author").textContent =
-      `posted by: ${event.createdBy?.username ?? "unknown"}`;
+    const authorEl = document.getElementById("author");
+    authorEl.textContent = "";
+    const authorName = event.createdBy?.username ?? "unknown";
+    authorEl.appendChild(document.createTextNode("posted by: "));
+    const authorNameEl = document.createElement("span");
+    authorNameEl.textContent = authorName;
+    authorNameEl.classList.add(usernameColorClass(authorName));
+    authorEl.appendChild(authorNameEl);
     document.getElementById("description").textContent = event.description;
     document.getElementById("date").textContent = `date: ${formatDate(event.date)}`;
     document.getElementById("location").textContent = `location: ${event.location}`;

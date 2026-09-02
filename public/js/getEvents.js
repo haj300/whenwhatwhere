@@ -1,5 +1,6 @@
 import { fetchEvents, removeEvent, getSession } from "./api.js";
 import { formatDate } from "./format.js";
+import { usernameColorClass } from "./usernameColor.js";
 
 document.addEventListener("DOMContentLoaded", getEvents);
 
@@ -57,10 +58,13 @@ function renderEvents(events, me) {
     const eventItem = createAndAppend("div", eventList, { class: "event-item" });
     const eventTitle = createAndAppend("h2", eventItem, { text: event.name, class: "event-title" });
     const eventImage = createAndAppend("img", eventItem, { src: event.image, class: "event-image" });
-    createAndAppend("p", eventItem, {
-      text: `posted by: ${event.createdBy?.username ?? "unknown"}`,
-      class: "event-author",
-    });
+    const authorEl = createAndAppend("p", eventItem, { class: "event-author" });
+    const authorName = event.createdBy?.username ?? "unknown";
+    authorEl.appendChild(document.createTextNode("posted by: "));
+    const authorNameEl = document.createElement("span");
+    authorNameEl.textContent = authorName;
+    authorNameEl.classList.add(usernameColorClass(authorName));
+    authorEl.appendChild(authorNameEl);
     createAndAppend("p", eventItem, { text: `date: ${formatDate(event.date)}` });
     createAndAppend("p", eventItem, { text: `location: ${event.location}` });
     if (event.link) {
