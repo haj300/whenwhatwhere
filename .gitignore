@@ -186,6 +186,7 @@ public/uploads/
 # local project notes / instructions (not for version control)
 CLAUDE.md
 MEMORY.md
+ADMIN.md
 
 # security scan reports and remediation evidence
 security-scan/
