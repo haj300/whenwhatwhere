@@ -74,7 +74,7 @@ class PostEvent {
       existing = await fetchEvent(eventId);
     } catch (e) {
       console.error(e);
-      this.blockForm("Could not load event.");
+      this.blockForm("kunde inte ladda event");
       return;
     }
     const canEdit =
@@ -84,8 +84,8 @@ class PostEvent {
       return;
     }
     this.prefillForm(existing);
-    document.getElementById("formTitle").textContent = "edit event";
-    document.getElementById("submitButton").textContent = "save";
+    document.getElementById("formTitle").textContent = "ändra event";
+    document.getElementById("submitButton").textContent = "spara";
   }
 
   blockForm(message) {
@@ -161,7 +161,7 @@ class PostEvent {
       }
     } catch (e) {
       console.error(e);
-      this.showError(e.message || "Could not save event. Please try again.");
+      this.showError(e.message || "kunde inte spara. försök igen");
     }
   }
 }

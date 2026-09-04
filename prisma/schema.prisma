@@ -13,12 +13,13 @@ enum Role {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique @db.VarChar(255)
-  passwordHash String   @db.VarChar(255)
-  username     String?  @unique @db.VarChar(20)
-  role         Role     @default(CONTRIBUTOR)
+  id           Int       @id @default(autoincrement())
+  email        String    @unique @db.VarChar(255)
+  passwordHash String    @db.VarChar(255)
+  username     String?   @unique @db.VarChar(20)
+  role         Role      @default(CONTRIBUTOR)
   events       event[]
+  comments     Comment[]
 }
 
 model Invite {
@@ -30,13 +31,24 @@ model Invite {
 }
 
 model event {
-  id          Int      @id @default(autoincrement())
-  name        String   @db.VarChar(255)
-  description String   @db.VarChar(1255)
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String    @db.VarChar(1255)
   image       String?   @db.VarChar(255)
-  date        DateTime @db.Timestamp(6)
-  location    String   @db.VarChar(255)
-  link        String?  @db.VarChar(255)
-  createdBy   User     @relation(fields: [createdById], references: [id])
+  date        DateTime  @db.Timestamp(6)
+  location    String    @db.VarChar(255)
+  link        String?   @db.VarChar(255)
+  createdBy   User      @relation(fields: [createdById], references: [id])
   createdById Int
+  comments    Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  body      String   @db.VarChar(1000)
+  createdAt DateTime @default(now())
+  event     event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   Int
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
 }

@@ -1,26 +1,26 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Set up your account</title>
+    <title>skapa ditt konto</title>
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <h1>set up your account</h1>
+    <h1>skapa ditt konto</h1>
     <form id="setupForm">
-      <label for="username">choose a username:</label>
+      <label for="username">välj användarnamn:</label>
       <input
         type="text"
         id="username"
         name="username"
         pattern="[A-Za-z0-9_. -]{3,20}"
-        title="3-20 characters: letters, numbers, spaces, . _ or -"
+        title="3-20 tecken: bokstäver, siffror, mellanslag, . _ eller -"
         required
       />
-      <label for="password">choose a password:</label>
+      <label for="password">välj lösenord:</label>
       <input type="password" id="password" name="password" required />
-      <button type="submit">create account</button>
+      <button type="submit">skapa konto</button>
       <p id="formError" hidden class="form-error"></p>
     </form>
     <script type="module" src="../js/setup.js"></script>

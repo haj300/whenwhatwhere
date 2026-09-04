@@ -54,7 +54,7 @@ class SetupForm {
     } catch (e) {
       console.error(e);
       this.showError(
-        e.message || "I could not set up your account. Please try again.",
+        e.message || "kunde inte skapa kontot. försök igen",
       );
     }
   }

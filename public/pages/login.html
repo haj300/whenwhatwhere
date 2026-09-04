@@ -1,20 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Log in</title>
+    <title>logga in</title>
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <h1>log in</h1>
+    <h1>logga in</h1>
     <form id="loginForm">
-      <label for="email">email:</label>
+      <label for="email">e-post:</label>
       <input type="email" id="email" name="email" autocomplete="username" required />
-      <label for="password">password:</label>
+      <label for="password">lösenord:</label>
       <input type="password" id="password" name="password" autocomplete="current-password" required />
-      <button type="button" id="togglePassword" aria-pressed="false" aria-label="Show password">show</button>
-      <button type="submit">log in</button>
+      <button type="button" id="togglePassword" aria-pressed="false" aria-label="visa lösenord">visa</button>
+      <button type="submit">logga in</button>
       <p id="formError" hidden class="form-error"></p>
     </form>
     <script type="module" src="../js/login.js"></script>

@@ -48,3 +48,9 @@ export const loginLimiter = createRateLimiter({ max: 5, windowMs: 15 * 60 * 1000
 // counter) from a single IP. More generous than the per-email limit so
 // legitimate users behind a shared/NAT'd IP are not blocked prematurely.
 export const loginIpLimiter = createRateLimiter({ max: 30, windowMs: 5 * 60 * 1000 });
+
+// Per-user ceiling on comment creation. Keyed by user id (posting is always
+// authenticated, so no IP dimension is needed). Generous on purpose: this is
+// defense-in-depth against runaway loops and double-submits, not the primary
+// abuse control — invite-only trust is. Tune the numbers if they bite.
+export const commentLimiter = createRateLimiter({ max: 20, windowMs: 60 * 1000 });

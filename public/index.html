@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -15,18 +15,18 @@
     <div id="app">
       <p>STOCKHOLM. Music events. Add your own.</p>
       <form class="nav-link" action="pages/addEvent.html" method="get">
-        <button>Create event</button>
+        <button>skapa event</button>
       </form>
       <form class="nav-link" action="pages/login.html" method="get">
-        <button id="loginLink">Log in</button>
+        <button id="loginLink">logga in</button>
       </form>
-      <button id="logoutLink" hidden>Log out</button>
-      <button id="tabUpcoming" aria-pressed="true">[ Upcoming ]</button>
-      <button id="tabPast" aria-pressed="false">Past</button>
+      <button id="logoutLink" hidden>logga ut</button>
+      <button id="tabUpcoming" aria-pressed="true">[ kommande ]</button>
+      <button id="tabPast" aria-pressed="false">tidigare</button>
     </div>
     <div id="eventList"></div>
     <p id="eventTitle"></p>
-    <p id="loginStatus">Not logged in</p>
+    <p id="loginStatus">inte inloggad</p>
     <img id="footerImage" src="./assets/x-CALENDAR_1.gif" alt="calendar gif" />
     <script type="module" src="js/getEvents.js"></script>
     <script type="module" src="js/session.js"></script>

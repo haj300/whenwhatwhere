@@ -27,8 +27,8 @@ class LoginForm {
     const willShow = password.type === "password";
     password.type = willShow ? "text" : "password";
     this.toggleButton.setAttribute("aria-pressed", String(willShow));
-    this.toggleButton.setAttribute("aria-label", willShow ? "Hide password" : "Show password");
-    this.toggleButton.textContent = willShow ? "hide" : "show";
+    this.toggleButton.setAttribute("aria-label", willShow ? "dölj lösenord" : "visa lösenord");
+    this.toggleButton.textContent = willShow ? "dölj" : "visa";
   }
 
   showError(msg) {
@@ -54,7 +54,7 @@ class LoginForm {
       window.location.href = "/";
     } catch (e) {
       console.error(e);
-      this.showError(e.message || "Could not log in. Please try again.");
+      this.showError(e.message || "kunde inte logga in. försök igen");
     }
   }
 }
