@@ -128,6 +128,11 @@ button {
   text-align: center;
 }
 
+#editButton {
+  display: block;
+  margin-left: auto; /* right-align the edit button */
+}
+
 #headerImage {
   position: absolute;
   top: 0;

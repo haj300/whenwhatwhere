@@ -60,9 +60,11 @@ async function getEvent(eventId) {
     }
     const canEdit = me && (me.role === "ADMIN" || event.createdById === me.userId);
     if (canEdit) {
-      const editLink = document.getElementById("editLink");
-      editLink.href = `/pages/addEvent.html?id=${eventId}`;
-      editLink.removeAttribute("hidden");
+      const editButton = document.getElementById("editButton");
+      editButton.addEventListener("click", () => {
+        location.href = `/pages/addEvent.html?id=${eventId}`;
+      });
+      editButton.removeAttribute("hidden");
     }
   } catch (e) {
     console.error(e);
