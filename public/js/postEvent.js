@@ -35,6 +35,7 @@ class PostEvent {
   async requireLoggedIn() {
     try {
       await getSession();
+      this.eventForm.removeAttribute("hidden");
     } catch {
       window.location.href = "/pages/inviteOnly.html";
     }
@@ -83,6 +84,7 @@ class PostEvent {
       this.blockForm("You don't have permission to edit this event.");
       return;
     }
+    this.eventForm.removeAttribute("hidden");
     this.prefillForm(existing);
     document.getElementById("formTitle").textContent = "ändra event";
     document.getElementById("submitButton").textContent = "spara";
