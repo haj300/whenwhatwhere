@@ -8,16 +8,22 @@
   </head>
   <body>
     <div id="event">
-      <h1 id="name"></h1>
-      <div class="event-meta">
-        <p id="date"></p>
-        <p id="location"></p>
-        <p id="author"></p>
+      <div class="event-item">
+        <div class="event-header">
+          <h1 id="name"></h1>
+        </div>
+        <div class="event-body">
+          <div class="event-meta">
+            <p id="date"></p>
+            <p id="location"></p>
+            <p id="author"></p>
+          </div>
+          <img id="image" class="event-image" src="" alt="" />
+          <p id="description"></p>
+          <a id="link" href="" target="_blank" rel="noopener noreferrer" hidden></a>
+          <button type="button" id="editButton" hidden>ändra event</button>
+        </div>
       </div>
-      <img id="image" class="event-image" src="" alt="" />
-      <p id="description"></p>
-      <a id="link" href="" target="_blank" rel="noopener noreferrer" hidden></a>
-      <button type="button" id="editButton" hidden>ändra event</button>
       <section id="comments">
         <h2>kommentarer</h2>
         <ul id="commentList"></ul>
