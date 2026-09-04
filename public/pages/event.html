@@ -18,7 +18,22 @@
       <p id="description"></p>
       <a id="link" href="" target="_blank" rel="noopener noreferrer" hidden></a>
       <a id="editLink" href="" hidden>Edit Event</a>
+      <section id="comments">
+        <h2>Comments</h2>
+        <ul id="commentList"></ul>
+        <form id="commentForm" hidden>
+          <textarea
+            id="commentBody"
+            maxlength="1000"
+            required
+            placeholder="Add a comment"
+          ></textarea>
+          <p id="commentError" hidden></p>
+          <button type="submit" class="button">Post</button>
+        </form>
+      </section>
     </div>
     <script type="module" src="../js/getEvent.js"></script>
+    <script type="module" src="../js/comments.js"></script>
   </body>
 </html>

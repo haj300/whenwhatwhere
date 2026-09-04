@@ -6,6 +6,7 @@ import { koaBody } from "koa-body";
 import serve from "koa-static";
 import dotenv from "dotenv";
 import { eventsRouter } from "./routes/events";
+import { commentsRouter } from "./routes/comments";
 import { authRouter } from "./routes/auth";
 import { requireAuth } from "./middleware/auth";
 
@@ -143,6 +144,8 @@ app.use(authRouter.routes());
 app.use(authRouter.allowedMethods());
 app.use(eventsRouter.routes());
 app.use(eventsRouter.allowedMethods());
+app.use(commentsRouter.routes());
+app.use(commentsRouter.allowedMethods());
 
 const uploadRouter = new Router();
 uploadRouter.post("/uploadImage", requireAuth, uploadImageHandler);
