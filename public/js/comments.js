@@ -61,7 +61,7 @@ function renderComment(c, me) {
     const del = document.createElement("button");
     del.type = "button";
     del.className = "button";
-    del.textContent = "delete";
+    del.textContent = "ta bort";
     del.addEventListener("click", async () => {
       try {
         await removeComment(c.id);
@@ -85,7 +85,7 @@ async function onSubmit(e, me) {
     bodyEl.value = "";
     await renderComments(me);
   } catch (err) {
-    errorEl.textContent = err.message || "Could not post comment.";
+    errorEl.textContent = err.message || "kunde inte skicka kommentaren";
     errorEl.removeAttribute("hidden");
   }
 }

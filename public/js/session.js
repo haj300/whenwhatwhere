@@ -20,13 +20,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (loginStatus) {
     loginStatus.textContent = "";
     if (session.username) {
-      loginStatus.appendChild(document.createTextNode("Logged in as: "));
+      loginStatus.appendChild(document.createTextNode("inloggad som: "));
       const usernameEl = document.createElement("span");
       usernameEl.textContent = session.username;
       usernameEl.classList.add(usernameColorClass(session.username));
       loginStatus.appendChild(usernameEl);
     } else {
-      loginStatus.textContent = `Logged in as: user #${session.userId}`;
+      loginStatus.textContent = `inloggad som: användare #${session.userId}`;
     }
   }
 

@@ -1,35 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Create event</title>
+    <title>skapa event</title>
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
-    <h1 id="formTitle">create event</h1>
+    <h1 id="formTitle">skapa event</h1>
     <form id="eventForm" enctype="multipart/form-data">
-      <label for="name">title:</label>
-      <input type="text" id="name" name="name" required />
-      <label for="time">time:</label>
-      <input type="time" id="time" name="time" required />
-      <label for="date">date:</label>
-      <input type="date" id="date" name="date" required />
-      <label for="location">location:</label>
-      <input type="text" id="location" name="location" required />
-      <label for="link">link:</label>
-      <input type="url" id="link" name="link" />
-      <label for="description">description:</label>
-      <textarea
-        id="description"
-        name="description"
-        class="description"
-        required
-      ></textarea>
-      <label for="image">image:</label>
-      <img id="currentImage" class="event-image" src="" alt="" hidden />
-      <input type="file" id="image" name="file" accept="image/*" />
-      <button type="submit" id="submitButton">create</button>
+      <div class="form-section">
+        <div class="form-section-header">vad</div>
+        <div class="form-section-body">
+          <label for="name">titel:</label>
+          <span class="field">
+            <input type="text" id="name" name="name" required />
+            <span class="required-asterisk">*</span>
+          </span>
+          <label for="description">text:</label>
+          <span class="field">
+            <textarea
+              id="description"
+              name="description"
+              class="description"
+              required
+            ></textarea>
+            <span class="required-asterisk">*</span>
+          </span>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-header">när &amp; var</div>
+        <div class="form-section-body">
+          <label for="time">tid:</label>
+          <span class="field">
+            <input type="time" id="time" name="time" required />
+            <span class="required-asterisk">*</span>
+          </span>
+          <label for="date">datum:</label>
+          <span class="field">
+            <input type="date" id="date" name="date" required />
+            <span class="required-asterisk">*</span>
+          </span>
+          <label for="location">plats:</label>
+          <span class="field">
+            <input type="text" id="location" name="location" required />
+            <span class="required-asterisk">*</span>
+          </span>
+          <label for="link">länk:</label>
+          <input type="url" id="link" name="link" />
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-header">bild</div>
+        <div class="form-section-body">
+          <label for="image">bild:</label>
+          <img id="currentImage" class="event-image" src="" alt="" hidden />
+          <input type="file" id="image" name="file" accept="image/*" />
+        </div>
+      </div>
+      <p class="required-note"><span class="required-asterisk">*</span> obligatoriskt fält</p>
+      <button type="submit" id="submitButton">skapa</button>
       <p id="formError" hidden class="form-error"></p>
     </form>
     <script type="module" src="../js/postEvent.js"></script>

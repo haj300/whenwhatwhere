@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="sv">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>event</title>
     <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
@@ -17,19 +17,19 @@
       <img id="image" class="event-image" src="" alt="" />
       <p id="description"></p>
       <a id="link" href="" target="_blank" rel="noopener noreferrer" hidden></a>
-      <button type="button" id="editButton" hidden>Edit Event</button>
+      <button type="button" id="editButton" hidden>ändra event</button>
       <section id="comments">
-        <h2>Comments</h2>
+        <h2>kommentarer</h2>
         <ul id="commentList"></ul>
         <form id="commentForm" hidden>
           <textarea
             id="commentBody"
             maxlength="1000"
             required
-            placeholder="Add a comment"
+            placeholder="skriv en kommentar"
           ></textarea>
           <p id="commentError" hidden></p>
-          <button type="submit" class="button">Post</button>
+          <button type="submit" class="button">skicka</button>
         </form>
       </section>
     </div>

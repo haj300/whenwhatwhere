@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => getEvent(eventId));
 
 async function getEvent(eventId) {
   if (!eventId) {
-    document.getElementById("name").textContent = "Event not found.";
+    document.getElementById("name").textContent = "hittade inget event";
     return;
   }
   try {
@@ -35,15 +35,15 @@ async function getEvent(eventId) {
     document.getElementById("name").textContent = event.name;
     const authorEl = document.getElementById("author");
     authorEl.textContent = "";
-    const authorName = event.createdBy?.username ?? "unknown";
-    authorEl.appendChild(document.createTextNode("posted by: "));
+    const authorName = event.createdBy?.username ?? "okänd";
+    authorEl.appendChild(document.createTextNode("postat av: "));
     const authorNameEl = document.createElement("span");
     authorNameEl.textContent = authorName;
     authorNameEl.classList.add(usernameColorClass(authorName));
     authorEl.appendChild(authorNameEl);
     document.getElementById("description").textContent = event.description;
-    document.getElementById("date").textContent = `date: ${formatDate(event.date)}`;
-    document.getElementById("location").textContent = `location: ${event.location}`;
+    document.getElementById("date").textContent = `datum: ${formatDate(event.date)}`;
+    document.getElementById("location").textContent = `plats: ${event.location}`;
     document.getElementById("image").src = event.image || "";
     if (event.link) {
       const linkEl = document.getElementById("link");
@@ -68,6 +68,6 @@ async function getEvent(eventId) {
     }
   } catch (e) {
     console.error(e);
-    document.getElementById("name").textContent = e.message || "Could not load event.";
+    document.getElementById("name").textContent = e.message || "kunde inte ladda event";
   }
 }
