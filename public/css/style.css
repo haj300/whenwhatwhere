@@ -93,13 +93,9 @@ button {
 }
 
 .event-link a {
-  -webkit-appearance: button;
-  appearance: button; /* render the link with native button chrome */
-  padding: 0.2rem 0.6rem;
-  color: initial;
-  font: inherit;
-  cursor: pointer;
-  text-decoration: none;
+  color: #f0efef;
+  text-decoration: underline;
+  word-break: break-word; /* long URLs wrap instead of overflowing the card */
 }
 
 #eventList :is(h4) {
