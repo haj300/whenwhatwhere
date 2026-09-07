@@ -56,19 +56,21 @@ function renderEvents(events, me) {
   eventList.innerHTML = "";
   events.forEach((event) => {
     const eventItem = createAndAppend("div", eventList, { class: "event-item" });
-    const eventTitle = createAndAppend("h2", eventItem, { text: event.name, class: "event-title" });
-    const eventImage = createAndAppend("img", eventItem, { src: event.image, class: "event-image" });
-    const authorEl = createAndAppend("p", eventItem, { class: "event-author" });
+    const eventHeader = createAndAppend("div", eventItem, { class: "event-header" });
+    const eventTitle = createAndAppend("h2", eventHeader, { text: event.name, class: "event-title" });
+    const eventBody = createAndAppend("div", eventItem, { class: "event-body" });
+    const eventImage = createAndAppend("img", eventBody, { src: event.image, class: "event-image" });
+    const authorEl = createAndAppend("p", eventBody, { class: "event-author" });
     const authorName = event.createdBy?.username ?? "okänd";
     authorEl.appendChild(document.createTextNode("postat av: "));
     const authorNameEl = document.createElement("span");
     authorNameEl.textContent = authorName;
     authorNameEl.classList.add(usernameColorClass(authorName));
     authorEl.appendChild(authorNameEl);
-    createAndAppend("p", eventItem, { text: `datum: ${formatDate(event.date)}` });
-    createAndAppend("p", eventItem, { text: `plats: ${event.location}` });
+    createAndAppend("p", eventBody, { text: `datum: ${formatDate(event.date)}` });
+    createAndAppend("p", eventBody, { text: `plats: ${event.location}` });
     if (event.link) {
-      const linkBlock = createAndAppend("div", eventItem, { class: "event-link" });
+      const linkBlock = createAndAppend("div", eventBody, { class: "event-link" });
       createAndAppend("a", linkBlock, { text: "öppna länk", href: event.link });
     }
     const goToDetails = () => {
@@ -79,7 +81,7 @@ function renderEvents(events, me) {
 
     const canManage = me && (me.role === "ADMIN" || event.createdById === me.userId);
     if (canManage) {
-      const actions = createAndAppend("div", eventItem, { class: "event-actions" });
+      const actions = createAndAppend("div", eventBody, { class: "event-actions" });
 
       const editButton = createAndAppend("button", actions, { text: "ändra" });
       editButton.addEventListener("click", () => {
