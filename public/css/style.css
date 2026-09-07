@@ -123,30 +123,18 @@ button {
 }
 
 .event-item {
+  padding: 1rem;
   margin-bottom: 1rem;
-  border: 2px solid #333;
-  box-sizing: border-box;
+  background-color: #999;
   display: flex;
   flex-direction: column;
   -ms-flex-align: center;
   width: 350px;
 }
 
-.event-header {
-  background-color: #666;
-  padding: 0.4rem 0.8rem;
-}
-
-.event-body {
-  background-color: #999;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
 .event-title {
   font-size: 1.5em;
-  margin: 0;
+  margin-bottom: 0.5rem;
   cursor: pointer;
 }
 
