@@ -129,7 +129,8 @@ button {
   display: flex;
   flex-direction: column;
   -ms-flex-align: center;
-  width: 350px;
+  max-width: 350px;
+  width: 100%;
 }
 
 .event-header {
@@ -203,6 +204,29 @@ button {
   height: auto;
 }
 
+/* hit counter as a split-flap airport board: black tiles, white digits */
+#visitorCount {
+  display: block;
+  width: fit-content;
+  margin: 1rem auto;
+  text-align: center;
+  font-family: "Courier New", monospace;
+}
+
+.counter-board {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.counter-tile {
+  min-width: 1ch;
+  padding: 0.12rem 0.2rem;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.7rem;
+  background-color: #333;
+}
+
 .event-meta {
   font-family: "Courier New", monospace;
   border-top: 1px solid #ccc;
@@ -215,6 +239,13 @@ button {
 
 .event-meta p {
   margin: 0.2rem 0;
+}
+
+/* preserve line breaks + runs of spaces the user typed in the description,
+   while still wrapping long lines. .textContent stays, so no XSS risk. */
+#description {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 /* username colors — keep in sync with COLOR_CLASSES in public/js/usernameColor.js */
