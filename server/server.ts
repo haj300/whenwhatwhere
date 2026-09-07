@@ -30,7 +30,7 @@ app.use(async (ctx, next) => {
   ctx.set("Permissions-Policy", "geolocation=(), camera=(), microphone=()");
   ctx.set(
     "Content-Security-Policy",
-    "default-src 'self'; img-src 'self' blob:; frame-ancestors 'none'"
+    "default-src 'self'; img-src 'self' blob:; frame-ancestors 'none'",
   );
   if (ctx.secure) {
     ctx.set("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
@@ -66,6 +66,7 @@ const UPLOAD_DIR = path.join("public", "uploads");
 // controlled. Returns the detected MIME type, or null if not an allowed image.
 const ALLOWED_IMAGE_MIME = new Set([
   "image/jpeg",
+  "image/jpg",
   "image/png",
   "image/webp",
   "image/gif",
@@ -138,7 +139,7 @@ const uploadImageHandler = async (ctx: any) => {
 
 // ── routes ──────────────────────────────────────────────────────
 app.use(
-  koaBody({ multipart: true, formidable: { maxFileSize: 5 * 1024 * 1024 } })
+  koaBody({ multipart: true, formidable: { maxFileSize: 5 * 1024 * 1024 } }),
 );
 app.use(authRouter.routes());
 app.use(authRouter.allowedMethods());
