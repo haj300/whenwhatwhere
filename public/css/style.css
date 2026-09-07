@@ -85,7 +85,8 @@ button {
 .event-actions {
   display: flex;
   gap: 0.5rem;
-  align-self: flex-end;
+  width: fit-content;
+  margin-left: auto;
 }
 
 .event-link {
@@ -108,7 +109,6 @@ button {
   max-width: 350px;
   width: 100%;
   height: auto;
-  aspect-ratio: auto;
   display: block;
   margin-left: auto;
   margin-right: auto;
@@ -132,7 +132,6 @@ button {
   -ms-flex-align: center;
   max-width: 350px;
   width: 100%;
-  min-height: 0;
 }
 
 .event-header {
@@ -143,9 +142,6 @@ button {
 .event-body {
   background-color: #999;
   padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
 }
 
 .event-title {
@@ -242,6 +238,11 @@ button {
 
 .event-meta p {
   margin: 0.2rem 0;
+}
+
+/* bold the username in event "postat av:" lines (list + detail) */
+.event-author span {
+  font-weight: bold;
 }
 
 /* preserve line breaks + runs of spaces the user typed in the description,
