@@ -52,3 +52,9 @@ model Comment {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
 }
+
+// Single-row hit counter (one row, id = 1). Stores no personal data.
+model Counter {
+  id   Int @id @default(autoincrement())
+  hits Int @default(0)
+}
