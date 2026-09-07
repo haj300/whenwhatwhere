@@ -241,6 +241,13 @@ button {
   margin: 0.2rem 0;
 }
 
+/* preserve line breaks + runs of spaces the user typed in the description,
+   while still wrapping long lines. .textContent stays, so no XSS risk. */
+#description {
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
 /* username colors — keep in sync with COLOR_CLASSES in public/js/usernameColor.js */
 .uc-aqua {
   color: aqua;
