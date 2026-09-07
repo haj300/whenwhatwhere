@@ -190,6 +190,15 @@ button {
   margin-left: auto; /* right-align the edit button */
 }
 
+#backLink {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+#cancelButton {
+  margin-left: 0.5rem;
+}
+
 #headerImage {
   position: absolute;
   top: 0;
