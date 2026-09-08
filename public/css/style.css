@@ -348,7 +348,7 @@ button {
 }
 
 .comment-name-unclaimed {
-  color: #999; /* muted, deliberately uncolored — "anyone could have typed this" */
+  color: #555; /* muted relative to a colored username, but still readable against the #999 comment background — "anyone could have typed this" */
 }
 
 #commentForm {
