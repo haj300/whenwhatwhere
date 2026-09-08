@@ -16,7 +16,14 @@ export function canEditEvent(
 
 export function canDeleteComment(
   user: AuthUser,
-  comment: { authorId: number },
+  comment: { authorId: number | null },
 ): boolean {
   return user.role === "ADMIN" || comment.authorId === user.userId;
+}
+
+export function canDeleteHandleComment(
+  handleId: number,
+  comment: { handleId: number | null },
+): boolean {
+  return comment.handleId === handleId;
 }
