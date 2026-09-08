@@ -26,6 +26,58 @@ describe("validateNewComment", () => {
   });
 });
 
+describe("validateNewComment — name/reserve/password", () => {
+  test("defaults name to null and reserve to false when omitted", () => {
+    const r = validateNewComment({ body: "hi" });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.comment.name).toBeNull();
+      expect(r.comment.reserve).toBe(false);
+      expect(r.comment.password).toBeNull();
+    }
+  });
+
+  test("accepts a plain anonymous name up to 20 characters", () => {
+    const r = validateNewComment({ body: "hi", name: "  Katja  " });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.comment.name).toBe("Katja");
+  });
+
+  test("rejects a plain anonymous name over 20 characters", () => {
+    expect(validateNewComment({ body: "hi", name: "a".repeat(21) }).ok).toBe(false);
+  });
+
+  test("reserve requires a valid username", () => {
+    const r = validateNewComment({ body: "hi", reserve: true, name: "ab", password: "a-decent-passphrase" });
+    expect(r.ok).toBe(false);
+  });
+
+  test("reserve requires a valid password", () => {
+    const r = validateNewComment({ body: "hi", reserve: true, name: "katja", password: "short" });
+    expect(r.ok).toBe(false);
+  });
+
+  test("reserve requires both name and password to be present", () => {
+    expect(validateNewComment({ body: "hi", reserve: true, password: "a-decent-passphrase" }).ok).toBe(false);
+    expect(validateNewComment({ body: "hi", reserve: true, name: "katja" }).ok).toBe(false);
+  });
+
+  test("accepts a valid reserve request", () => {
+    const r = validateNewComment({
+      body: "hi",
+      reserve: true,
+      name: "katja",
+      password: "a-decent-passphrase",
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) {
+      expect(r.comment.name).toBe("katja");
+      expect(r.comment.reserve).toBe(true);
+      expect(r.comment.password).toBe("a-decent-passphrase");
+    }
+  });
+});
+
 describe("canDeleteComment", () => {
   const comment = { authorId: 7 };
   test("author can delete", () => {
