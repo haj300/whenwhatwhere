@@ -33,13 +33,28 @@
       <section id="comments">
         <h2>kommentarer</h2>
         <ul id="commentList"></ul>
-        <form id="commentForm" hidden>
+        <form id="commentForm">
+          <input
+            id="commentName"
+            type="text"
+            maxlength="20"
+            placeholder="anonym"
+          />
           <textarea
             id="commentBody"
             maxlength="1000"
             required
             placeholder="skriv en kommentar"
           ></textarea>
+          <button type="button" id="toggleLogin" class="button">har du ett reserverat namn? logga in</button>
+          <div id="loginFields" hidden>
+            <input id="loginPassword" type="password" placeholder="lösenord" />
+            <button type="button" id="loginSubmit" class="button">logga in</button>
+          </div>
+          <button type="button" id="toggleReserve" class="button">reservera detta namn</button>
+          <div id="reserveFields" hidden>
+            <input id="reservePassword" type="password" placeholder="välj ett lösenord" />
+          </div>
           <p id="commentError" hidden></p>
           <button type="submit" class="button">skicka</button>
         </form>

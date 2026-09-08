@@ -347,6 +347,10 @@ button {
   align-self: flex-end; /* right-align the delete button */
 }
 
+.comment-name-unclaimed {
+  color: #999; /* muted, deliberately uncolored — "anyone could have typed this" */
+}
+
 #commentForm {
   margin-top: 1rem;
   display: flex;
