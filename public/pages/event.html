@@ -40,21 +40,24 @@
             maxlength="20"
             placeholder="anonym"
           />
+          <p class="comment-form-links">
+            <button type="button" id="toggleLogin" class="link-button">har du ett reserverat namn? logga in</button>
+            ·
+            <button type="button" id="toggleReserve" class="link-button">reservera detta namn</button>
+          </p>
+          <div id="loginFields" hidden>
+            <input id="loginPassword" type="password" placeholder="lösenord" />
+            <button type="button" id="loginSubmit" class="button">logga in</button>
+          </div>
+          <div id="reserveFields" hidden>
+            <input id="reservePassword" type="password" placeholder="välj ett lösenord" />
+          </div>
           <textarea
             id="commentBody"
             maxlength="1000"
             required
             placeholder="skriv en kommentar"
           ></textarea>
-          <button type="button" id="toggleLogin" class="button">har du ett reserverat namn? logga in</button>
-          <div id="loginFields" hidden>
-            <input id="loginPassword" type="password" placeholder="lösenord" />
-            <button type="button" id="loginSubmit" class="button">logga in</button>
-          </div>
-          <button type="button" id="toggleReserve" class="button">reservera detta namn</button>
-          <div id="reserveFields" hidden>
-            <input id="reservePassword" type="password" placeholder="välj ett lösenord" />
-          </div>
           <p id="commentError" hidden></p>
           <button type="submit" class="button">skicka</button>
         </form>

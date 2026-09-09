@@ -358,6 +358,24 @@ button {
   align-items: flex-end; /* right-align the Post button */
 }
 
+.comment-form-links {
+  align-self: stretch;
+  text-align: left;
+  margin: 0.4rem 0;
+  font-size: 0.85em;
+  color: #333;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #f0efef; /* matches .event-link a */
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 #commentForm textarea {
   width: 100%;
   box-sizing: border-box; /* padding doesn't push it past 100% width */
