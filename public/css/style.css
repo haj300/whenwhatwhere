@@ -189,9 +189,23 @@ button {
   text-align: center;
 }
 
-#editButton {
+#editButton:not([hidden]) {
   display: block;
   margin-left: auto; /* right-align the edit button */
+}
+
+#backLink {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.9rem; /* larger tap target for mobile */
+  border: 1px solid #333;
+  background-color: #ccc;
+  color: black;
+  text-decoration: none;
+}
+
+#cancelButton {
+  margin-left: 0.5rem;
 }
 
 #headerImage {
@@ -333,10 +347,6 @@ button {
   font-size: 0.85em;
   color: #eceaea;
   margin: 0 0 0.3rem 0;
-}
-
-.comment-meta span {
-  font-weight: bold;
 }
 
 .comment-body {
