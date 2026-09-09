@@ -93,10 +93,10 @@ function renderComment(c, me) {
     nameSpan.textContent = c.author.username;
     nameSpan.classList.add(usernameColorClass(c.author.username));
   } else if (c.handle) {
-    nameSpan.textContent = `${c.handle.username}*`;
+    nameSpan.textContent = c.handle.username;
     nameSpan.classList.add(usernameColorClass(c.handle.username));
   } else {
-    nameSpan.textContent = c.displayName || "anonym";
+    nameSpan.textContent = `${c.displayName || "anonym"}*`;
     nameSpan.classList.add("comment-name-unclaimed");
   }
   meta.appendChild(nameSpan);
