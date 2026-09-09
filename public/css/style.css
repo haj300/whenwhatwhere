@@ -118,6 +118,49 @@ button {
   display: none;
 }
 
+#event .event-image {
+  cursor: pointer;
+}
+
+.image-dialog {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.image-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.image-dialog img {
+  display: block;
+  width: 90vw;
+  height: 90vh;
+  object-fit: contain;
+}
+
+.image-dialog-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #f0efef;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-dialog-close:focus-visible {
+  outline: 2px solid #f0efef;
+  outline-offset: -4px;
+}
+
 #eventList .event-image {
   margin-bottom: 3%;
   cursor: pointer;

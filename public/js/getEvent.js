@@ -18,7 +18,30 @@ class EventDetail {
 const urlParams = new URLSearchParams(window.location.search);
 const eventId = urlParams.get("id");
 
-document.addEventListener("DOMContentLoaded", () => getEvent(eventId));
+document.addEventListener("DOMContentLoaded", () => {
+  getEvent(eventId);
+  setupImageDialog();
+});
+
+function setupImageDialog() {
+  const imageEl = document.getElementById("image");
+  const dialog = document.getElementById("imageDialog");
+  const dialogImg = document.getElementById("imageDialogImg");
+  const closeButton = document.getElementById("imageDialogClose");
+
+  imageEl.addEventListener("click", () => {
+    if (!imageEl.src) return;
+    dialogImg.src = imageEl.src;
+    dialogImg.alt = imageEl.alt;
+    dialog.showModal();
+  });
+
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  closeButton.addEventListener("click", () => dialog.close());
+}
 
 async function getEvent(eventId) {
   if (!eventId) {
