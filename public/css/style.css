@@ -358,8 +358,11 @@ button {
   align-items: flex-end; /* right-align the Post button */
 }
 
-.comment-form-links {
+#anonymousFields {
   align-self: stretch;
+}
+
+.comment-form-links {
   text-align: left;
   margin: 0.4rem 0;
   font-size: 0.85em;

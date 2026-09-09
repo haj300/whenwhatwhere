@@ -13,6 +13,7 @@ import { usernameColorClass } from "./usernameColor.js";
 const eventId = new URLSearchParams(window.location.search).get("id");
 const listEl = document.getElementById("commentList");
 const formEl = document.getElementById("commentForm");
+const anonymousFieldsEl = document.getElementById("anonymousFields");
 const nameEl = document.getElementById("commentName");
 const bodyEl = document.getElementById("commentBody");
 const errorEl = document.getElementById("commentError");
@@ -55,7 +56,12 @@ async function init() {
 // session already exists (fresh visit with a still-valid handleToken, or
 // right after a successful reserve/login in this same page load).
 async function refreshFormForSession(me) {
-  if (me) return; // a real login always takes priority; nothing to check
+  if (me) {
+    // A real login always takes priority — the anonymous name/reserve UI
+    // would be confusing clutter for someone already posting as themselves.
+    anonymousFieldsEl.setAttribute("hidden", "");
+    return;
+  }
   const handle = await getHandleSession();
   if (handle) {
     activeHandleId = handle.handleId;
