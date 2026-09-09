@@ -118,6 +118,49 @@ button {
   display: none;
 }
 
+#event .event-image {
+  cursor: pointer;
+}
+
+.image-dialog {
+  position: relative;
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.image-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.image-dialog img {
+  display: block;
+  width: 90vw;
+  height: 90vh;
+  object-fit: contain;
+}
+
+.image-dialog-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(0, 0, 0, 0.6);
+  color: #f0efef;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-dialog-close:focus-visible {
+  outline: 2px solid #f0efef;
+  outline-offset: -4px;
+}
+
 #eventList .event-image {
   margin-bottom: 3%;
   cursor: pointer;
@@ -189,9 +232,23 @@ button {
   text-align: center;
 }
 
-#editButton {
+#editButton:not([hidden]) {
   display: block;
   margin-left: auto; /* right-align the edit button */
+}
+
+#backLink {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem 0.9rem; /* larger tap target for mobile */
+  border: 1px solid #333;
+  background-color: #ccc;
+  color: black;
+  text-decoration: none;
+}
+
+#cancelButton {
+  margin-left: 0.5rem;
 }
 
 #headerImage {
@@ -347,11 +404,36 @@ button {
   align-self: flex-end; /* right-align the delete button */
 }
 
+.comment-name-unclaimed {
+  color: #555; /* muted relative to a colored username, but still readable against the #999 comment background — "anyone could have typed this" */
+}
+
 #commentForm {
   margin-top: 1rem;
   display: flex;
   flex-direction: column;
   align-items: flex-end; /* right-align the Post button */
+}
+
+#anonymousFields {
+  align-self: stretch;
+}
+
+.comment-form-links {
+  text-align: left;
+  margin: 0.4rem 0;
+  font-size: 0.85em;
+  color: #333;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #f0efef; /* matches .event-link a */
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 #commentForm textarea {

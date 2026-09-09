@@ -71,7 +71,7 @@ function renderEvents(events, me) {
     createAndAppend("p", eventBody, { text: `plats: ${event.location}` });
     if (event.link) {
       const linkBlock = createAndAppend("div", eventBody, { class: "event-link" });
-      createAndAppend("a", linkBlock, { text: "öppna länk", href: event.link });
+      createAndAppend("a", linkBlock, { text: event.link, href: event.link });
     }
     const goToDetails = () => {
       window.location.href = `/pages/event.html?id=${event.id}`;

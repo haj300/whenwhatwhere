@@ -25,6 +25,9 @@ class PostEvent {
       "change",
       this.previewSelectedImage.bind(this),
     );
+    document
+      .getElementById("cancelButton")
+      .addEventListener("click", this.handleCancel.bind(this));
     if (eventId) {
       this.enterEditMode(eventId);
     } else {
@@ -88,6 +91,12 @@ class PostEvent {
     this.prefillForm(existing);
     document.getElementById("formTitle").textContent = "ändra event";
     document.getElementById("submitButton").textContent = "spara";
+  }
+
+  handleCancel() {
+    window.location.href = this.eventId
+      ? `/pages/event.html?id=${this.eventId}`
+      : "/";
   }
 
   blockForm(message) {

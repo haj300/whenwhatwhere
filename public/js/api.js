@@ -36,7 +36,17 @@ export const createEvent = (data) => request("POST", "/addEvent", data);
 export const removeEvent = (id) => request("DELETE", `/event/${id}`);
 export const updateEvent = (id, data) => request("PUT", `/event/${id}`, data);
 export const fetchComments = (eventId) => request("GET", `/event/${eventId}/comments`);
-export const postComment = (eventId, body) => request("POST", `/event/${eventId}/comments`, { body });
+export const postComment = (eventId, data) => request("POST", `/event/${eventId}/comments`, data);
+export const loginHandle = (username, password) =>
+  request("POST", "/comment-handles/login", { username, password });
+let handleSessionPromise;
+export function getHandleSession() {
+  handleSessionPromise ??= request("GET", "/comment-handles/me").catch(() => null);
+  return handleSessionPromise;
+}
+export function resetHandleSessionCache() {
+  handleSessionPromise = undefined;
+}
 export const removeComment = (id) => request("DELETE", `/comment/${id}`);
 export const hitCounter = () => request("POST", "/counter/hit");
 

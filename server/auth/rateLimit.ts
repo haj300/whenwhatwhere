@@ -54,3 +54,15 @@ export const loginIpLimiter = createRateLimiter({ max: 30, windowMs: 5 * 60 * 10
 // defense-in-depth against runaway loops and double-submits, not the primary
 // abuse control — invite-only trust is. Tune the numbers if they bite.
 export const commentLimiter = createRateLimiter({ max: 20, windowMs: 60 * 1000 });
+
+// Per-IP ceiling for anonymous and handle-session comments. Anonymous posts
+// have no user id to key on, and a handle session isn't elevated trust over
+// plain anonymous — both share this budget. Same shape as commentLimiter,
+// just re-anchored on IP since that's the only identity anonymous requests
+// have.
+export const anonCommentLimiter = createRateLimiter({ max: 20, windowMs: 60 * 1000 });
+
+// Mirrors loginLimiter / loginIpLimiter exactly, protecting
+// /comment-handles/login against brute-forcing a reserved handle's password.
+export const handleLoginLimiter = createRateLimiter({ max: 5, windowMs: 15 * 60 * 1000 });
+export const handleLoginIpLimiter = createRateLimiter({ max: 30, windowMs: 5 * 60 * 1000 });

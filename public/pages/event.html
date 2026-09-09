@@ -8,6 +8,7 @@
   </head>
   <body>
     <div id="event">
+      <a id="backLink" href="/">&larr; tillbaka</a>
       <div class="event-item">
         <div class="event-header">
           <h1 id="name"></h1>
@@ -19,6 +20,10 @@
             <p id="author"></p>
           </div>
           <img id="image" class="event-image" src="" alt="" />
+          <dialog id="imageDialog" class="image-dialog">
+            <button type="button" id="imageDialogClose" class="image-dialog-close" aria-label="stäng">&times;</button>
+            <img id="imageDialogImg" alt="" />
+          </dialog>
           <p id="description"></p>
           <a
             id="link"
@@ -33,7 +38,27 @@
       <section id="comments">
         <h2>kommentarer</h2>
         <ul id="commentList"></ul>
-        <form id="commentForm" hidden>
+        <form id="commentForm">
+          <div id="anonymousFields">
+            <input
+              id="commentName"
+              type="text"
+              maxlength="20"
+              placeholder="anonym"
+            />
+            <p class="comment-form-links">
+              <button type="button" id="toggleLogin" class="link-button">har du ett reserverat namn? logga in</button>
+              ·
+              <button type="button" id="toggleReserve" class="link-button">reservera detta namn</button>
+            </p>
+            <div id="loginFields" hidden>
+              <input id="loginPassword" type="password" placeholder="lösenord" />
+              <button type="button" id="loginSubmit" class="button">logga in</button>
+            </div>
+            <div id="reserveFields" hidden>
+              <input id="reservePassword" type="password" placeholder="välj ett lösenord" />
+            </div>
+          </div>
           <textarea
             id="commentBody"
             maxlength="1000"

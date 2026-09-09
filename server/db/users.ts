@@ -9,6 +9,10 @@ export async function getUserById(id: number): Promise<User | null> {
   return prisma.user.findUnique({ where: { id } });
 }
 
+export async function getUserByUsername(username: string): Promise<User | null> {
+  return prisma.user.findUnique({ where: { username } });
+}
+
 export async function createUser(data: {
   email: string;
   passwordHash: string;
