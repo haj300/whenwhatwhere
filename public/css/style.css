@@ -335,6 +335,10 @@ button {
   margin: 0 0 0.3rem 0;
 }
 
+.comment-meta span {
+  font-weight: bold;
+}
+
 .comment-body {
   margin: 0;
   color: white;
