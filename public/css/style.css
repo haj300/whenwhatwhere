@@ -419,6 +419,15 @@ button {
   align-self: stretch;
 }
 
+#anonymousFields input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+  font-size: 16px; /* below 16px, iOS Safari auto-zooms the page on focus */
+}
+
 .comment-form-links {
   text-align: left;
   margin: 0.4rem 0;
@@ -429,18 +438,27 @@ button {
 .link-button {
   background: none;
   border: none;
-  padding: 0;
+  padding: 0.5rem 0; /* taller tap target without changing the inline text look */
   font: inherit;
   color: #f0efef; /* matches .event-link a */
   text-decoration: underline;
   cursor: pointer;
 }
 
+.button {
+  font-size: 16px;
+  padding: 0.6rem 1rem;
+  min-height: 44px; /* comfortable touch target */
+}
+
 #commentForm textarea {
   width: 100%;
   box-sizing: border-box; /* padding doesn't push it past 100% width */
   min-height: 3rem;
+  margin: 0.6rem 0;
+  padding: 0.6rem;
   font-family: inherit;
+  font-size: 16px; /* below 16px, iOS Safari auto-zooms the page on focus */
   align-self: stretch; /* stay full-width despite form's flex-end alignment */
 }
 
