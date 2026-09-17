@@ -89,12 +89,17 @@ async function main() {
     console.log(`  ${oldUrl} -> ${newUrl}`);
 
     if (APPLY) {
-      fs.renameSync(fullPath, path.join(UPLOAD_DIR, newName));
+      // DB updated before the rename: if this throws, the file is still at
+      // its old (extensionless) name and gets picked up again next run. If
+      // the rename below fails instead, this row already points at newUrl,
+      // so a re-run's updateMany matches nothing (harmless) and just
+      // retries the rename — either order of failure is recoverable.
       const result = await prisma.event.updateMany({
         where: { image: oldUrl },
         data: { image: newUrl },
       });
       rowsUpdated += result.count;
+      fs.renameSync(fullPath, path.join(UPLOAD_DIR, newName));
     }
     renamed++;
   }
