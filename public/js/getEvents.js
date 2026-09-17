@@ -17,11 +17,13 @@ export async function getEvents() {
     }
     const events = await fetchEvents();
     const now = new Date();
+    const GRACE_PERIOD_MS = 12 * 60 * 60 * 1000;
+    const isUpcoming = (event) => new Date(event.date).getTime() + GRACE_PERIOD_MS >= now.getTime();
     const upcoming = events
-      .filter((event) => new Date(event.date) >= now)
+      .filter(isUpcoming)
       .sort((a, b) => new Date(a.date) - new Date(b.date));
     const past = events
-      .filter((event) => new Date(event.date) < now)
+      .filter((event) => !isUpcoming(event))
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
     setupTabs(upcoming, past, me);

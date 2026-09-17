@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import sharp from "sharp";
 import Koa from "koa";
 import Router from "@koa/router";
 import { koaBody } from "koa-body";
@@ -52,6 +53,18 @@ app.use(async (ctx, next) => {
 });
 
 // ── static files ────────────────────────────────────────────────
+// Uploaded images get a far-future cache lifetime: their filenames are
+// randomly generated per upload (see uploadImageHandler) and never
+// reused, so a browser that already has one will never see stale
+// content at the same URL. Everything else (HTML/CSS/JS) keeps
+// koa-static's default of no caching, since those filenames don't
+// change between deploys and must always be re-fetched.
+app.use(async (ctx, next) => {
+  if (ctx.path.startsWith("/uploads/")) {
+    ctx.set("Cache-Control", "public, max-age=31536000, immutable");
+  }
+  await next();
+});
 app.use(serve(path.join("public")));
 
 // ── image upload: local filesystem ───────────────────────────────
@@ -73,6 +86,19 @@ const ALLOWED_IMAGE_MIME = new Set([
   "image/webp",
   "image/gif",
 ]);
+
+// koa-static derives the response's Content-Type purely from the file
+// extension. Uploaded files are saved under a random, extensionless name
+// (see uploadImageHandler), so without this mapping every upload would be
+// served as application/octet-stream — which some browsers (notably iOS
+// WebKit) handle inconsistently for <img>, including mis-deriving the
+// image's intrinsic dimensions.
+const MIME_EXTENSIONS: Record<string, string> = {
+  "image/jpeg": ".jpg",
+  "image/png": ".png",
+  "image/webp": ".webp",
+  "image/gif": ".gif",
+};
 
 async function sniffImageMime(filepath: string): Promise<string | null> {
   const fd = await fs.promises.open(filepath, "r");
@@ -111,6 +137,13 @@ async function sniffImageMime(filepath: string): Promise<string | null> {
   }
 }
 
+// Long edge, in pixels, that an uploaded image is downscaled to. Large
+// enough for the full-screen image dialog (90vw/90vh), small enough to
+// keep uploads fast on mobile networks.
+const MAX_IMAGE_DIMENSION = 1600;
+const JPEG_QUALITY = 80;
+const WEBP_QUALITY = 80;
+
 const uploadImageHandler = async (ctx: any) => {
   const files = ctx.request.files?.file;
   const file = Array.isArray(files) ? files[0] : files;
@@ -132,10 +165,36 @@ const uploadImageHandler = async (ctx: any) => {
 
   // path.basename() strips any directory components from the generated
   // name, so a crafted filename can't escape the uploads folder
-  // (path-traversal protection).
-  const safeName = path.basename(file.newFilename);
+  // (path-traversal protection). The extension is appended from the
+  // server-verified detectedMime, never from the client-supplied filename.
+  const safeName = `${path.basename(file.newFilename)}${MIME_EXTENSIONS[detectedMime]}`;
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-  await fs.promises.copyFile(file.filepath, path.join(UPLOAD_DIR, safeName));
+  const destPath = path.join(UPLOAD_DIR, safeName);
+
+  if (detectedMime === "image/gif") {
+    // sharp would flatten an animated GIF down to a single frame, so
+    // GIFs are stored as-is rather than re-encoded.
+    await fs.promises.copyFile(file.filepath, destPath);
+  } else {
+    // .rotate() with no args bakes in the EXIF orientation (phone photos
+    // are often stored sideways with a rotation flag) before resizing.
+    // Re-encoding also drops all other EXIF metadata (e.g. GPS location)
+    // as a side effect, since sharp only keeps it when asked to.
+    const image = sharp(file.filepath).rotate().resize({
+      width: MAX_IMAGE_DIMENSION,
+      height: MAX_IMAGE_DIMENSION,
+      fit: "inside",
+      withoutEnlargement: true,
+    });
+    if (detectedMime === "image/png") {
+      await image.png({ compressionLevel: 9 }).toFile(destPath);
+    } else if (detectedMime === "image/webp") {
+      await image.webp({ quality: WEBP_QUALITY }).toFile(destPath);
+    } else {
+      await image.jpeg({ quality: JPEG_QUALITY }).toFile(destPath);
+    }
+  }
+
   ctx.body = `/uploads/${encodeURIComponent(safeName)}`;
 };
 
